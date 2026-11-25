@@ -1,5 +1,7 @@
 # PhishTriage
 
+[![CI](https://github.com/anujakawminda12-sudo/phishtriage/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/anujakawminda12-sudo/phishtriage/actions/workflows/ci.yml)
+
 A Python command-line tool that takes a suspicious `.eml` email and produces an explainable phishing verdict and
 triage report: Likely benign, Suspicious or Malicious, with every point of the score tied to a named rule.
 
@@ -66,7 +68,7 @@ Also measured in the same blind runs:
 | O5 | Every point links to a named rule | All 100 blind scores rebuilt from rule names; every report lists each rule with its points | Met |
 | O6 | At least 85% correct, under 10% false positives (50 + 50) | Blind, above | False positives met; correct verdicts not met |
 | O7 | Markdown, HTML and JSON for every run | Every run; 100 of 100 unseen emails, schema-valid | Met |
-| O8 | At least 70% coverage, CI on GitHub, README with sample reports | 99% coverage, 1,542 tests on Python 3.12, 3.13 and 3.15; this README, a demo and three sample reports; the CI workflow runs once the repository is on GitHub | Coverage and README met; CI pending |
+| O8 | At least 70% coverage, CI on GitHub, README with sample reports | 99% coverage, 1,542 tests on Python 3.12, 3.13 and 3.15; this README, a demo and three sample reports; GitHub Actions runs ruff and the full test suite on all three versions for every push (badge at the top) | Met |
 
 ## What it does
 
