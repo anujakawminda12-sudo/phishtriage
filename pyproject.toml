@@ -59,9 +59,10 @@ filterwarnings = [
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-# Week 4: never read these folders, git or not. Until git is set up (after week 5) ruff
-# does not apply .gitignore, so `ruff format .` would read, and could rewrite, Markdown
-# files in samples/ (notes on real emails) and reports/ (generated reports).
+# Week 4: never read these folders, git or not. ruff applies .gitignore only inside a git
+# repository (checked in the GitHub phase), so in a copy without .git (a zip, a copy in a
+# VM) `ruff format .` would read, and could rewrite, Markdown files in samples/ (notes on
+# real emails) and reports/ (generated reports). Inside the repository both rules agree.
 extend-exclude = ["samples", "reports"]
 
 [tool.ruff.lint]

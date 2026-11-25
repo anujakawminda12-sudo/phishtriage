@@ -66,7 +66,7 @@ Also measured in the same blind runs:
 | O5 | Every point links to a named rule | All 100 blind scores rebuilt from rule names; every report lists each rule with its points | Met |
 | O6 | At least 85% correct, under 10% false positives (50 + 50) | Blind, above | False positives met; correct verdicts not met |
 | O7 | Markdown, HTML and JSON for every run | Every run; 100 of 100 unseen emails, schema-valid | Met |
-| O8 | At least 70% coverage, CI on GitHub, README with sample reports | 99% coverage, 1,538 tests on Python 3.12, 3.13 and 3.15; this README, a demo and three sample reports; the CI workflow runs once the repository is on GitHub | Coverage and README met; CI pending |
+| O8 | At least 70% coverage, CI on GitHub, README with sample reports | 99% coverage, 1,542 tests on Python 3.12, 3.13 and 3.15; this README, a demo and three sample reports; the CI workflow runs once the repository is on GitHub | Coverage and README met; CI pending |
 
 ## What it does
 
@@ -297,7 +297,17 @@ held-out email was read. Both held-out sets were checked against their fingerpri
 the genuine set with `--enrich --hosts-only` on my Mac, the phishing set offline in Claude's cloud workspace, an
 isolated Linux sandbox run by Anthropic (real phishing never goes on the development Mac, and no API key went
 into that workspace). `phishtriage results` computed every number above from the two `--stats` files, which
-hold only scores, verdicts and rule names. Nothing was changed after the blind runs.
+hold only scores, verdicts and rule names. Nothing in the scoring was changed after the blind runs.
+
+**Changed after the blind runs: one compatibility fix, not a scoring change.** GitHub Actions now runs
+Ubuntu 26.04, whose libmagic 5.46 reports a ZIP read from memory as `application/octet-stream`, a
+[known libmagic bug](https://mailman.astron.com/pipermail/file/2025-January/001446.html). `detect_type()`
+now corrects exactly that answer when the content starts with the ZIP signature `PK\x03\x04`. On both
+evaluation machines libmagic recognised ZIPs itself (the test for it passed there before the blind runs), so
+the correction does not apply to anything measured above. The code exactly as evaluated is the first commit
+of this repository: its `src/` and `pyproject.toml` give the frozen manifest fingerprint
+`91cee05c42508653f26f29012de13b8ae93c288e2d277a2442c65e82adfec230` (the SHA-256 of the `sha256sum` lines of
+those 46 files, sorted by path).
 
 To repeat the phishing side (inside a VM, never on your own computer):
 
@@ -370,7 +380,7 @@ ruff check .
 ruff format --check .
 ```
 
-1,538 tests, 99% coverage, on Python 3.12, 3.13 and 3.15 (GitHub Actions runs all three). No test can use the
+1,542 tests, 99% coverage, on Python 3.12, 3.13 and 3.15 (GitHub Actions runs all three). No test can use the
 network or read your real `.env` or `samples/`. New tests are mutation-tested while they are written: the code
 they protect is broken on purpose, one change at a time, to prove that a test fails.
 

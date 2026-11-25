@@ -23,6 +23,10 @@ except ImportError:  # libmagic is not installed (macOS: brew install libmagic)
 
 LIBMAGIC_MISSING = "File type detection unavailable: libmagic is not installed"
 
+# Every ZIP entry starts with this "local file header" signature: the letters PK, then 3, 4
+ZIP_SIGNATURE = b"PK\x03\x04"
+UNKNOWN_BINARY = "application/octet-stream"  # libmagic's answer for "data I do not know"
+
 MAX_ARCHIVE_BYTES = 50 * 1024 * 1024  # larger ZIPs are not listed
 MAX_MEMBERS_KEPT = 100  # file names kept per archive
 
@@ -119,13 +123,24 @@ def inspect_bytes(attachment: Attachment, data: bytes, defects: list[str]) -> No
 
 
 def detect_type(data: bytes) -> str:
-    """The real MIME type, read by libmagic from the content, or "" if unavailable."""
+    """The real MIME type, read by libmagic from the content, or "" if unavailable.
+
+    One correction (GitHub phase): libmagic 5.46 (Ubuntu 26.04, Debian 13, Alpine 3.21)
+    answers "application/octet-stream" for a ZIP read from memory, a known libmagic bug
+    (bugs.astron.com issue 622). A ZIP starts with ZIP_SIGNATURE, so that one answer is
+    corrected to "application/zip"; every other answer is kept exactly as libmagic gave
+    it. Without the correction, a ZIP named photo.jpg would not count as an archive in
+    disguise, and its file list would not be read.
+    """
     if magic is None:
         return ""
     try:
-        return magic.from_buffer(data, mime=True)
+        found = magic.from_buffer(data, mime=True)
     except Exception:  # libmagic can fail on odd input; the type is then simply unknown
         return ""
+    if found == UNKNOWN_BINARY and data.startswith(ZIP_SIGNATURE):
+        return "application/zip"
+    return found
 
 
 def _read_zip_listing(attachment: Attachment, data: bytes, defects: list[str]) -> None:

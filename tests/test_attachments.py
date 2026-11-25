@@ -107,6 +107,46 @@ def test_detect_type_reads_the_content_not_the_name():
     assert detect_type(TEXT) == "text/plain"
 
 
+class Libmagic546:
+    """Stands in for libmagic 5.46 (GitHub's Ubuntu 26.04 runner has it), which answers
+    "application/octet-stream" for a ZIP read from memory. Java comparison: a Mockito stub
+    of one method, so these tests give the same result whatever libmagic is installed."""
+
+    def __init__(self, answer: str = "application/octet-stream") -> None:
+        self.answer = answer
+
+    def from_buffer(self, data: bytes, mime: bool = False) -> str:
+        return self.answer
+
+
+def test_a_zip_is_still_a_zip_with_libmagic_546(monkeypatch):
+    monkeypatch.setattr(attachments, "magic", Libmagic546())
+    assert detect_type(make_zip(["a.txt"])) == "application/zip"
+
+
+def test_unknown_data_stays_unknown_with_libmagic_546(monkeypatch):
+    monkeypatch.setattr(attachments, "magic", Libmagic546())
+    assert detect_type(b"\x00\x01 not a zip") == "application/octet-stream"
+    assert detect_type(b"PK but no ZIP signature") == "application/octet-stream"
+
+
+def test_only_the_unknown_answer_is_corrected(monkeypatch):
+    """A ZIP-based format that libmagic names itself (a .docx here) keeps that name."""
+    docx = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    monkeypatch.setattr(attachments, "magic", Libmagic546(docx))
+    assert detect_type(make_zip(["word/document.xml"])) == docx
+
+
+def test_a_zip_dressed_as_a_photo_is_caught_with_libmagic_546(monkeypatch):
+    """Why the correction matters: without it this archive in disguise would be missed."""
+    monkeypatch.setattr(attachments, "magic", Libmagic546())
+    photo = blank("photo.jpg")
+    inspect_bytes(photo, make_zip(["invoice.exe"]), [])
+    assert photo.detected_type == "application/zip"
+    assert photo.archive_members == ["invoice.exe"]
+    assert is_type_mismatch(photo.filename, photo.detected_type)
+
+
 def test_without_libmagic_nothing_crashes(monkeypatch):
     monkeypatch.setattr(attachments, "magic", None)
     defects: list[str] = []
