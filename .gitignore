@@ -1,0 +1,47 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+
+# Tools
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.partial
+
+# Editors
+.vscode/
+.idea/
+
+# Secrets: never commit real API keys (.env.example is the empty template)
+.env
+.env.*
+!.env.example
+
+# Real samples and outputs: never commit live phishing or personal emails
+samples/
+reports/
+*.sqlite3
+*.sqlite
+*.db
+
+# Emails belong in tests/fixtures/ only (hand-built and safe); anywhere else they may be real
+*.eml
+*.msg
+*.mbox
+!tests/fixtures/*.eml
+
+# A zip can hold anything, a whole project folder with samples/ and .env included
+*.zip
+
+# Reports and --stats files written at the top of the project instead of in reports/
+/report.*
+/*.json
+
+# macOS
+.DS_Store

@@ -1,0 +1,73 @@
+Return-Path: <nimal@example.org>
+Authentication-Results: mx.example.org;
+       spf=pass smtp.mailfrom=nimal@example.org;
+       dkim=pass header.d=example.org;
+       dmarc=pass header.from=example.org
+Received: from laptop-nimal.example.org (laptop-nimal.example.org [10.20.30.40])
+        by mx.example.org with ESMTPSA id k3j2h1
+        for <soc@example.org>; Fri, 20 Nov 2026 09:15:02 +0530
+From: "Nimal Perera" <nimal@example.org>
+To: soc@example.org
+Subject: Fwd: Your password expires today
+Date: Fri, 20 Nov 2026 09:15:00 +0530
+Message-ID: <fwd-5521@example.org>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="fwd-outer"
+
+--fwd-outer
+Content-Type: text/plain; charset="utf-8"
+
+Hi SOC team,
+I got this email this morning and I think it is phishing.
+I am forwarding it as an attachment so you can see the original.
+Nimal
+
+--fwd-outer
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="Your password expires today.eml"
+
+Return-Path: <bounce@mailer-4410.test>
+Authentication-Results: mx.example.org;
+       spf=pass smtp.mailfrom=bounce@mailer-4410.test;
+       dkim=pass header.d=micros0ft-support.test;
+       dmarc=pass header.from=micros0ft-support.test
+Received: from mail.micros0ft-support.test (unknown [203.0.113.77])
+        by mx.example.org with ESMTP id p9q8r7
+        for <nimal@example.org>; Fri, 20 Nov 2026 07:58:41 +0530
+From: "Microsoft 365 Admin" <no-reply@micros0ft-support.test>
+To: nimal@example.org
+Subject: Your password expires today
+Date: Fri, 20 Nov 2026 07:58:30 +0530
+Message-ID: <pw-7781@micros0ft-support.test>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="phish-outer"
+
+--phish-outer
+Content-Type: multipart/alternative; boundary="phish-alt"
+
+--phish-alt
+Content-Type: text/plain; charset="utf-8"
+
+Your Microsoft 365 password expires today.
+Keep your current password here: http://micros0ft-login.test/auth?user=nimal
+
+--phish-alt
+Content-Type: text/html; charset="utf-8"
+
+<html><body>
+<p>Your Microsoft 365 password expires today.</p>
+<p><a href="http://micros0ft-login.test/auth?user=nimal">https://login.microsoftonline.com/keep-password</a></p>
+</body></html>
+
+--phish-alt--
+
+--phish-outer
+Content-Type: text/plain; name="Password_Policy.txt"
+Content-Disposition: attachment; filename="Password_Policy.txt"
+Content-Transfer-Encoding: base64
+
+SGFybWxlc3MgUGhpc2hUcmlhZ2UgdGVzdCBmaWxlLiBOb3QgbWFsd2FyZS4K
+
+--phish-outer--
+
+--fwd-outer--

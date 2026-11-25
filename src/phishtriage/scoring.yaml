@@ -1,0 +1,171 @@
+# PhishTriage scoring: how findings become points, a score and a verdict (week 4, step 8)
+#
+# Every finding the checks produce belongs to exactly one "signal" below. A signal is
+# one row of the proposal's scoring table, and it counts ONCE per email, however many of
+# its findings there are: ten links with lying text are one signal, not ten.
+# The score is the sum of the signals' points, capped at 100.
+#
+# Tune the numbers here, not in the code. PhishTriage checks this file when it loads it:
+# a misspelt rule, a rule that is missing, or a rule in two signals stops the run with a
+# message, instead of quietly scoring 0.
+#
+# The numbers are the proposal's (pages 10-11), plus the rows marked "new". Week 5's
+# calibration (one round, on the gate sets) changed one number, with the reason next to
+# it. Then this file was frozen: week 5 tests it as it is, on emails it has never seen,
+# and a test pins its SHA-256, so any later change is a decision, not an accident.
+
+version: 1
+
+verdicts:
+  malicious: 70    # 70-100: Malicious
+  suspicious: 25   # 25-69: Suspicious. 0-24: Likely benign
+  # Calibrated in week 5 (round 1 of 1, NOT blind: gate sets only, without --enrich).
+  # Was 30, the proposal's number. 6 of the 50 phishing gate emails (phishing_pot)
+  # scored exactly 25 and no genuine gate email scored over 20, so 25 catches 28 of 50
+  # instead of 22 and still flags 0 of 50 genuine. No score changes, only the line.
+  # The held-out sets, read once after the freeze, decide whether it holds.
+
+# When a threat-intel finding earns points. The checks report any hit at all (1 engine,
+# 1 report), and week 3's gate showed how weak that is on genuine mail (not blind):
+# 17 of 50 genuine emails had a VirusTotal hit and 25 an AbuseIPDB report. So only
+# these count; the rest are shown in the report with the reason they did not count.
+evidence:
+  virustotal_min_malicious: 3        # a URL, domain or IP: engines that say "malicious"
+  virustotal_file_min_malicious: 5   # an attachment: this many makes it Malicious at once
+  abuseipdb_min_score: 50            # AbuseIPDB's confidence, for the sender's IP only
+  urlhaus_host_min_online: 1         # a listed host counts only with a listed URL online
+
+signals:
+  # --- decides the verdict on its own -------------------------------------------------
+  known_malware_attachment:
+    label: An attachment is known malware
+    override: malicious      # proposal: "an instant Malicious override"
+    attack: T1566.001
+    rules: [virustotal_malicious_file, urlhaus_file_listed]
+
+  # --- strong ---------------------------------------------------------------------------
+  flagged_link_or_domain:
+    # URL level always counts, even on a shared platform (the verdict is on that exact
+    # URL). A domain or host counts only off shared platforms: a verdict on a whole
+    # docs.google.com or user.github.io says little about one email.
+    label: A link, domain or IP in the email is flagged by threat intelligence
+    points: 35
+    attack: T1566.002
+    rules: [virustotal_malicious, urlhaus_url_listed, urlhaus_host_listed]
+
+  double_extension:
+    # New: the proposal puts this in the 20-point attachment row below. On its own it
+    # is near-certain intent ("invoice.pdf.exe"), and with 20 an email whose only sign
+    # is such an attachment could never reach Suspicious without a VirusTotal hit
+    # (seen on the attachments_phish fixture: 20 points, Likely benign; not blind).
+    label: An attachment hides its real type behind a double extension
+    points: 30
+    attack: T1566.001
+    rules: [attachment_double_extension]
+
+  dmarc_fail:
+    label: The From domain failed DMARC
+    points: 25
+    rules: [dmarc_fail]
+
+  # --- medium ---------------------------------------------------------------------------
+  lookalike_sender:
+    label: The sender's domain imitates a brand
+    points: 20
+    rules: [lookalike_sender_domain]
+
+  risky_attachment:
+    # Proposal row "risky attachment type or double extension". New: a file whose content
+    # is not what its name says, and a password-protected archive (scanners cannot look
+    # inside), are in the same row and count once with it.
+    label: An attachment is a risky type, or is not what its name says
+    points: 20
+    attack: T1566.001
+    rules: [attachment_risky_type, attachment_type_mismatch, attachment_encrypted_archive]
+
+  brand_in_sender_domain:
+    # New: "paypal-secure-login.test". Weaker than a lookalike, because genuine
+    # companies also register names like this; to be checked on the legit gate set.
+    label: The sender's domain uses a brand's name but is not one of the brand's
+    points: 15
+    rules: [brand_in_sender_domain]
+
+  link_text_mismatch:
+    label: A link's text shows one site, but the link goes to another
+    points: 15
+    attack: T1566.002
+    rules: [link_text_mismatch]
+
+  reply_to_mismatch:
+    label: Replies would go to a different organisation than the sender's
+    points: 15
+    rules: [reply_to_mismatch]
+
+  display_name_spoof:
+    label: The sender's name claims a brand that did not send the email
+    points: 15
+    rules: [display_name_spoof]
+
+  new_domain:
+    label: A domain in the email was registered less than 30 days ago
+    points: 15
+    rules: [domain_new]
+
+  # --- weak -----------------------------------------------------------------------------
+  spf_fail:
+    label: The sending server is not allowed to send for the sender's domain (SPF)
+    points: 10
+    rules: [spf_fail, spf_softfail]
+
+  dkim_problem:
+    # Weighed low on purpose: genuine bulk mail is often signed only by its mailing
+    # service, which shows up as dkim_not_aligned (proposal: "weigh bulk-mail signals low")
+    label: DKIM failed, is missing, or was not signed by the sender's own domain
+    points: 10
+    rules: [dkim_fail, dkim_none, dkim_missing, dkim_not_aligned]
+
+  sender_ip_reported:
+    label: The IP the email came from is reported for abuse (AbuseIPDB)
+    points: 10
+    rules: [abuseipdb_sender_ip]
+
+  multiple_from:
+    # New: the proposal has no row for it. Rare in genuine mail, and a known trick to
+    # show one sender to the reader and another to the filters.
+    label: The email has more than one From address
+    points: 10
+    rules: [multiple_from_addresses]
+
+  hidden_destination:
+    label: A link hides where it goes (URL shortener or open redirect)
+    points: 5
+    attack: T1566.002
+    rules: [url_shortener, open_redirect]
+
+  pressure_wording:
+    label: The text pushes for quick action or asks for a login, password or payment
+    points: 5
+    rules: [urgency_wording, credential_request_wording]
+
+  return_path_mismatch:
+    # Weak: genuine bulk mail (Amazon SES, Mailjet) bounces to its mailing service's
+    # address, which week 2 showed is correct and harmless
+    label: Bounces go to a different organisation than the sender's (Return-Path)
+    points: 5
+    rules: [return_path_mismatch]
+
+  # --- shown in the report, worth nothing ----------------------------------------------------
+  link_to_sender_site:
+    label: A link's text shows one site but goes to the sender's own (often click tracking)
+    points: 0
+    rules: [link_text_mismatch_sender]
+
+  authentication_unknown:
+    label: No trusted Authentication-Results header, so SPF, DKIM and DMARC are unknown
+    points: 0
+    rules: [no_auth_results]
+
+  extra_auth_results:
+    label: More Authentication-Results headers further down (normal after forwarding)
+    points: 0
+    rules: [extra_auth_results]

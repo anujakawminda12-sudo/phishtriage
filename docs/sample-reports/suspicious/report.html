@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; style-src &#39;sha256-CQQQd3L3QQie9GcVi+JMZhtMb+pMtTII6Bc7uaq7DMg=&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
+<meta name="referrer" content="no-referrer">
+<title>PhishTriage report</title>
+<style>:root { color-scheme: light dark; --line: #8884; --muted: #888; }
+body { font: 15px/1.5 system-ui, sans-serif; margin: 2rem auto; max-width: 72rem; padding: 0 1rem; }
+h1, h2, h3, h4 { line-height: 1.2; }
+h2 { border-top: 2px solid var(--line); padding-top: 1rem; margin-top: 2.5rem; }
+table { border-collapse: collapse; margin: 0.5rem 0 1rem; width: 100%; }
+th, td { border: 1px solid var(--line); padding: 0.3rem 0.5rem; text-align: left; }
+th, td { vertical-align: top; }
+th { background: #8881; }
+td.value, code { font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
+td.value, code { overflow-wrap: anywhere; }
+.verdict { font-weight: 700; padding: 0.1rem 0.5rem; border-radius: 4px; color: #fff; }
+.malicious { background: #c62828; }
+.suspicious { background: #b26a00; }
+.likely-benign { background: #2e7d32; }
+.flagged { color: #e53935; font-weight: 600; }
+.skipped, .note, small { color: var(--muted); }</style>
+</head>
+<body>
+<main>
+<header>
+<h1>PhishTriage report</h1>
+<ul>
+<li><small>PhishTriage 0.1.0, generated 2026-11-24T14:14:20Z (UTC).</small></li>
+<li><small>Scoring: built-in scoring.yaml, SHA-256 <code>77c8089435bc8c70f6ad79a74e98004b65a64cf2c9255bccfe9adc2ed190bcf3</code>.</small></li>
+<li><small>Headers and content only: no reputation lookups.</small></li>
+<li><small>Every link, address, domain and IP is defanged: nothing in this report can be clicked.</small></li>
+</ul>
+</header>
+
+<section>
+<h2>Summary</h2>
+<p>Worst first; each file has its own section below.</p>
+<table>
+<thead><tr><th>File</th><th>Verdict</th><th>Decided by</th></tr></thead>
+<tbody>
+<tr><td>phish_open_redirect.eml</td><td><span class="verdict suspicious">SUSPICIOUS 35/100</span></td><td>the email itself</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>phish_open_redirect.eml</h2>
+<p><span class="verdict suspicious">SUSPICIOUS 35/100</span></p>
+
+<h3>The email</h3>
+<table>
+<tbody>
+<tr><th>Verdict</th><td><span class="verdict suspicious">SUSPICIOUS 35/100</span></td></tr>
+<tr><th>Based on</th><td>headers and content only: not enriched (--enrich adds reputation lookups)</td></tr>
+<tr><th>ATT&amp;CK</th><td>T1566.002 Phishing: Spearphishing Link</td></tr>
+<tr><th>From</th><td class="value">DocuSign &lt;dse[@]docusign-notice[.]test&gt;</td></tr>
+<tr><th>Reply-To</th><td class="value">-</td></tr>
+<tr><th>Return-Path</th><td class="value">-</td></tr>
+<tr><th>Subject</th><td>Please review and sign: Contract_2026.pdf</td></tr>
+<tr><th>Date</th><td>Mon, 23 Nov 2026 09:00:00 +0000</td></tr>
+<tr><th>Message-ID</th><td class="value">&lt;9f2c4b[@]docusign-notice[.]test&gt;</td></tr>
+<tr><th>Received hops</th><td>1</td></tr>
+<tr><th>Sender IP</th><td class="value">203[.]0[.]113[.]88 (from Authentication-Results)</td></tr>
+<tr><th>IOCs found</th><td>7 URLs, 6 domains, 1 IP, 1 email address</td></tr>
+<tr><th>Authentication</th><td>SPF pass, DKIM pass, DMARC pass (from mx[.]example[.]org)</td></tr>
+</tbody>
+</table>
+<h4>Reasons</h4>
+<table>
+<thead><tr><th>Points</th><th>Reason</th><th>Rules</th><th>Why it added nothing</th></tr></thead>
+<tbody>
+<tr><td>+15</td><td>The sender&#39;s domain uses a brand&#39;s name but is not one of the brand&#39;s</td><td class="value">brand_in_sender_domain</td><td class="note">-</td></tr>
+<tr><td>+15</td><td>The sender&#39;s name claims a brand that did not send the email</td><td class="value">display_name_spoof</td><td class="note">-</td></tr>
+<tr><td>+5</td><td>A link hides where it goes (URL shortener or open redirect)</td><td class="value">open_redirect</td><td class="note">-</td></tr>
+</tbody>
+</table>
+<h4>IOCs (defanged)</h4>
+<table>
+<thead><tr><th>Type</th><th>Value</th><th>Seen</th><th>Found in</th><th>Looked up</th></tr></thead>
+<tbody>
+<tr><td>URL</td><td class="value">hxxps://www[.]example[.]com/url?q=hxxps://docs-review[.]test/view/7781&amp;sa=D</td><td>2</td><td>text, html:a[href]</td><td>yes</td></tr>
+<tr><td>URL</td><td class="value">hxxps://docs-review[.]test/view/7781</td><td>2</td><td>text (inside a link to www[.]example[.]com), html:a[href] (inside a link to www[.]example[.]com)</td><td>yes</td></tr>
+<tr><td>URL</td><td class="value">hxxps://click[.]docusign-notice[.]test/track?url=hxxps://docusign-notice[.]test/help</td><td>1</td><td>text</td><td>yes</td></tr>
+<tr><td>URL</td><td class="value">hxxps://docusign-notice[.]test/help</td><td>2</td><td>text (inside a link to click[.]docusign-notice[.]test), html:a[href] (inside a link to click[.]docusign-notice[.]test)</td><td>yes</td></tr>
+<tr><td>URL</td><td class="value">hxxps://images[.]example[.]org/proxy?src=hxxps://cdn[.]example[.]net/logo[.]png</td><td>1</td><td>html:img[src]</td><td>yes</td></tr>
+<tr><td>URL</td><td class="value">hxxps://cdn[.]example[.]net/logo[.]png</td><td>1</td><td>html:img[src] (inside a link to images[.]example[.]org)</td><td>skip (allowlisted)</td></tr>
+<tr><td>URL</td><td class="value">hxxps://click[.]docusign-notice[.]test/track?url=https%3A%2F%2Fdocusign-notice[.]test%2Fhelp</td><td>1</td><td>html:a[href]</td><td>yes</td></tr>
+<tr><td>domain</td><td class="value">www[.]example[.]com</td><td>1</td><td>url</td><td>skip (allowlisted)</td></tr>
+<tr><td>domain</td><td class="value">docs-review[.]test</td><td>1</td><td>url</td><td>yes</td></tr>
+<tr><td>domain</td><td class="value">click[.]docusign-notice[.]test</td><td>2</td><td>url</td><td>yes</td></tr>
+<tr><td>domain</td><td class="value">docusign-notice[.]test</td><td>3</td><td>url, email address, header:Message-ID</td><td>yes</td></tr>
+<tr><td>domain</td><td class="value">images[.]example[.]org</td><td>1</td><td>url</td><td>skip (allowlisted)</td></tr>
+<tr><td>domain</td><td class="value">cdn[.]example[.]net</td><td>1</td><td>url</td><td>skip (allowlisted)</td></tr>
+<tr><td>IP</td><td class="value">203[.]0[.]113[.]88</td><td>2</td><td>sender IP, header:Received (hop 1)</td><td>yes</td></tr>
+<tr><td>email address</td><td class="value">dse[@]docusign-notice[.]test</td><td>1</td><td>header:From</td><td>yes</td></tr>
+</tbody>
+</table>
+<h4>Findings</h4>
+<ul>
+<li><code>display_name_spoof</code>: Display name &#34;DocuSign&#34; claims docusign, but sender is docusign-notice[.]test</li>
+<li><code>brand_in_sender_domain</code>: From domain docusign-notice[.]test uses the name docusign but is not docusign&#39;s (docusign[.]com, docusign[.]net)</li>
+<li><code>open_redirect</code>: 1 link on one site forwards to another, e.g. www[.]example[.]com forwards to docs-review[.]test</li>
+</ul>
+</section>
+</main>
+</body>
+</html>

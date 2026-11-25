@@ -1,0 +1,40 @@
+Return-Path: <security@example.org>
+Authentication-Results: mx.example.org;
+       spf=pass smtp.mailfrom=security@example.org;
+       dkim=pass header.d=example.org;
+       dmarc=pass header.from=example.org
+Received: from mail.example.org (mail.example.org [192.0.2.25])
+        by mx.example.org with ESMTPS id s5t6u7
+        for <student@example.org>; Thu, 19 Nov 2026 14:02:10 +0530
+From: "IT Security" <security@example.org>
+To: student@example.org
+Subject: Security notice: phishing campaign
+Date: Thu, 19 Nov 2026 14:02:00 +0530
+Message-ID: <notice-3310@example.org>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="notice"
+
+--notice
+Content-Type: text/plain; charset="utf-8"
+
+Security notice from the IT team.
+
+A phishing campaign is targeting staff. Do not visit hxxps://evil-login[.]test/reset
+and do not reply to billing[@]evil-login[.]test.
+
+Report suspicious emails: https://nam12.safelinks.protection.outlook.com/?url=https%3A%2F%2Freport.example.org%2Fphish&data=05%7C02%7Cstudent%40example.org%7Cabc&sdata=xyz%3D&reserved=0
+
+--notice
+Content-Type: text/html; charset="utf-8"
+
+<html><body>
+<p>Security notice from the IT team.</p>
+<p>A phishing campaign is targeting staff. Do not visit hxxps://evil-login[.]test/reset
+and do not reply to billing[@]evil-login[.]test.</p>
+<p><a href="https://nam12.safelinks.protection.outlook.com/?url=https%3A%2F%2Freport.example.org%2Fphish&amp;data=05%7C02%7Cstudent%40example.org%7Cabc&amp;sdata=xyz%3D&amp;reserved=0">Report suspicious emails</a></p>
+<p>Partner news: <a href="https://urldefense.proofpoint.com/v2/url?u=https-3A__partner-2Dportal.test_news&amp;d=DwMFaQ&amp;c=xyz&amp;r=abc&amp;m=def&amp;s=ghi&amp;e=">read here</a>
+or <a href="https://nam12.safelinks.protection.outlook.com/?url=https%3A%2F%2Furldefense.proofpoint.com%2Fv2%2Furl%3Fu%3Dhttps-3A__partner-2Dportal.test_news%26d%3DDwMFaQ%26c%3Dxyz%26r%3Dabc%26m%3Ddef%26s%3Dghi%26e%3D&amp;data=05%7C02%7Cstudent%40example.org%7Cabc&amp;sdata=xyz%3D&amp;reserved=0">read in Outlook</a>.</p>
+<p>Partner events: <a href="https://urldefense.com/v3/__https://partner-portal.test/events?q=a*b__;Kw!!ABC123!xyz$">see events</a></p>
+</body></html>
+
+--notice--

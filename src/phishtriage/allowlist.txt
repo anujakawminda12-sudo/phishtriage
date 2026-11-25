@@ -1,0 +1,62 @@
+# PhishTriage allowlist: domains whose IOCs are NOT sent for lookups in week 3.
+#
+# Allowlisted means "do not spend API quota on this", NEVER "this is safe".
+# Allowlisted IOCs are still shown in the report, marked "skip".
+#
+# One domain per line. A domain also covers its subdomains:
+#     google.com        covers www.google.com and mail.google.com
+# A line starting with "!" is an exception, for subdomains where anyone can host
+# content (and so can host a phishing page). The most specific line wins:
+#     !docs.google.com  means docs.google.com is always looked up
+# Never add hosting platforms where anyone can publish (cloudfront.net, amazonaws.com,
+# web.app, github.io, sharepoint.com, blob.core.windows.net, ...).
+#
+# Run with your own file:  phishtriage analyze email.eml --allowlist my-allowlist.txt
+
+# Google
+google.com
+!docs.google.com        # Google Docs and Forms: fake login forms
+!drive.google.com       # shared files
+!sites.google.com       # anyone can publish a site
+!script.google.com      # Apps Script web apps
+gstatic.com
+googleapis.com
+!storage.googleapis.com          # Google Cloud Storage: anyone can host files
+!firebasestorage.googleapis.com  # Firebase Storage: the same
+youtube.com
+ytimg.com
+
+# Microsoft
+microsoft.com
+!forms.microsoft.com    # Microsoft Forms: fake login forms
+office.com
+!forms.office.com
+!sway.office.com        # anyone can publish a Sway page
+live.com
+!onedrive.live.com      # shared files
+
+# Apple, Amazon (the shop, not AWS hosting)
+apple.com
+amazon.com
+
+# Social networks
+linkedin.com
+licdn.com
+facebook.com
+fbcdn.net
+instagram.com
+twitter.com
+x.com
+twimg.com
+
+# Free email providers: the domain says nothing about one sender's address
+gmail.com
+outlook.com
+hotmail.com
+yahoo.com
+
+# Standards bodies and the reserved example domains (RFC 2606)
+w3.org
+example.com
+example.org
+example.net

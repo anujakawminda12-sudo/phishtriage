@@ -1,0 +1,58 @@
+Return-Path: <accounts@invoice-portal.test>
+Authentication-Results: mx.example.org;
+       spf=pass smtp.mailfrom=accounts@invoice-portal.test;
+       dkim=pass header.d=invoice-portal.test;
+       dmarc=pass header.from=invoice-portal.test
+Received: from mail.invoice-portal.test (unknown [198.51.100.23])
+        by mx.example.org with ESMTP id m4n5o6
+        for <student@example.org>; Sat, 21 Nov 2026 08:12:40 +0530
+From: "Accounts Team" <accounts@invoice-portal.test>
+To: student@example.org
+Subject: Invoice INV-2026-1142 and payment details
+Date: Sat, 21 Nov 2026 08:12:30 +0530
+Message-ID: <inv-1142@invoice-portal.test>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="att-mixed"
+
+--att-mixed
+Content-Type: text/plain; charset="utf-8"
+
+Dear customer,
+Please find your invoice, statement and payment details attached.
+The password for the payment details archive is 2026.
+Accounts Team
+
+--att-mixed
+Content-Type: application/pdf; name="Invoice_INV-2026-1142.pdf"
+Content-Disposition: attachment; filename="Invoice_INV-2026-1142.pdf"
+Content-Transfer-Encoding: base64
+
+PGh0bWw+PGJvZHk+PHA+SGFybWxlc3MgUGhpc2hUcmlhZ2UgdGVzdCBmaWxlLiBOb3QgbWFsd2Fy
+ZS48L3A+PC9ib2R5PjwvaHRtbD4K
+
+--att-mixed
+Content-Type: application/octet-stream; name="Statement.pdf.exe"
+Content-Disposition: attachment; filename="Statement.pdf.exe"
+Content-Transfer-Encoding: base64
+
+SGFybWxlc3MgUGhpc2hUcmlhZ2UgdGVzdCBmaWxlLiBOb3QgbWFsd2FyZS4K
+
+--att-mixed
+Content-Type: application/zip; name="Payment_Details.zip"
+Content-Disposition: attachment; filename="Payment_Details.zip"
+Content-Transfer-Encoding: base64
+
+UEsDBAoACQAAAAJndV01ukySOQAAAC0AAAAWABwAUGF5bWVudF9EZXRhaWxzLnBkZi5qc1VUCQAD
+i0cBa4tHAWt1eAsAAQQAAAAABAAAAAACfPYoERCwVcCXYxZFG2j6sq0Cmo9q6RJpnsgSZG4FIJZz
+xDGSK+7KAzJtolmo3zJhlnCxMJshlw5QSwcINbpMkjkAAAAtAAAAUEsBAh4DCgAJAAAAAmd1XTW6
+TJI5AAAALQAAABYAGAAAAAAAAQAAAKSBAAAAAFBheW1lbnRfRGV0YWlscy5wZGYuanNVVAUAA4tH
+AWt1eAsAAQQAAAAABAAAAABQSwUGAAAAAAEAAQBcAAAAmQAAAAAA
+
+--att-mixed
+Content-Type: text/plain; name="Terms.txt"
+Content-Disposition: attachment; filename="Terms.txt"
+Content-Transfer-Encoding: base64
+
+VGVybXMgYW5kIGNvbmRpdGlvbnMuIEhhcm1sZXNzIFBoaXNoVHJpYWdlIHRlc3QgZmlsZS4K
+
+--att-mixed--

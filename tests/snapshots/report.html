@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; style-src &#39;sha256-CQQQd3L3QQie9GcVi+JMZhtMb+pMtTII6Bc7uaq7DMg=&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
+<meta name="referrer" content="no-referrer">
+<title>PhishTriage report</title>
+<style>:root { color-scheme: light dark; --line: #8884; --muted: #888; }
+body { font: 15px/1.5 system-ui, sans-serif; margin: 2rem auto; max-width: 72rem; padding: 0 1rem; }
+h1, h2, h3, h4 { line-height: 1.2; }
+h2 { border-top: 2px solid var(--line); padding-top: 1rem; margin-top: 2.5rem; }
+table { border-collapse: collapse; margin: 0.5rem 0 1rem; width: 100%; }
+th, td { border: 1px solid var(--line); padding: 0.3rem 0.5rem; text-align: left; }
+th, td { vertical-align: top; }
+th { background: #8881; }
+td.value, code { font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
+td.value, code { overflow-wrap: anywhere; }
+.verdict { font-weight: 700; padding: 0.1rem 0.5rem; border-radius: 4px; color: #fff; }
+.malicious { background: #c62828; }
+.suspicious { background: #b26a00; }
+.likely-benign { background: #2e7d32; }
+.flagged { color: #e53935; font-weight: 600; }
+.skipped, .note, small { color: var(--muted); }</style>
+</head>
+<body>
+<main>
+<header>
+<h1>PhishTriage report</h1>
+<ul>
+<li><small>PhishTriage 0.1.0, generated 2026-11-24T03:00:00Z (UTC).</small></li>
+<li><small>Scoring: built-in scoring.yaml, SHA-256 <code>77c8089435bc8c70f6ad79a74e98004b65a64cf2c9255bccfe9adc2ed190bcf3</code>.</small></li>
+<li><small>Headers and content only: no reputation lookups.</small></li>
+<li><small>Pieces of text your addresses were removed from: 1.</small></li>
+<li><small>Every link, address, domain and IP is defanged: nothing in this report can be clicked.</small></li>
+</ul>
+</header>
+
+<section>
+<h2>Summary</h2>
+<p>Worst first; each file has its own section below.</p>
+<table>
+<thead><tr><th>File</th><th>Verdict</th><th>Decided by</th></tr></thead>
+<tbody>
+<tr><td>phish_paypal_spoof.eml</td><td><span class="verdict malicious">MALICIOUS 100/100</span></td><td>the email itself</td></tr>
+<tr><td>forwarded_phish.eml</td><td><span class="verdict suspicious">SUSPICIOUS 60/100</span></td><td>forwarded email 1</td></tr>
+<tr><td>attachments_phish.eml</td><td><span class="verdict suspicious">SUSPICIOUS 50/100</span></td><td>the email itself</td></tr>
+<tr><td>broken_charset.eml</td><td><span class="verdict likely-benign">LIKELY BENIGN 0/100</span></td><td>the email itself</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>phish_paypal_spoof.eml</h2>
+<p><span class="verdict malicious">MALICIOUS 100/100</span></p>
+
+<h3>The email</h3>
+<table>
+<tbody>
+<tr><th>Verdict</th><td><span class="verdict malicious">MALICIOUS 100/100</span></td></tr>
+<tr><th>Based on</th><td>headers and content only: not enriched (--enrich adds reputation lookups)</td></tr>
+<tr><th>ATT&amp;CK</th><td>T1566.001 Phishing: Spearphishing Attachment, T1566.002 Phishing: Spearphishing Link</td></tr>
+<tr><th>From</th><td class="value">PayPal Security &lt;service[@]paypal[.]com&gt;</td></tr>
+<tr><th>Reply-To</th><td class="value">support[@]paypa1-secure[.]test</td></tr>
+<tr><th>Return-Path</th><td class="value">bounce[@]mailer-7731[.]test</td></tr>
+<tr><th>Subject</th><td>Your account has been suspended</td></tr>
+<tr><th>Date</th><td>Wed, 18 Nov 2026 10:41:00 +0000</td></tr>
+<tr><th>Message-ID</th><td class="value">&lt;a8f3e2[@]mailer-7731[.]test&gt;</td></tr>
+<tr><th>Received hops</th><td>1</td></tr>
+<tr><th>Sender IP</th><td class="value">203[.]0[.]113[.]45 (from Authentication-Results)</td></tr>
+<tr><th>IOCs found</th><td>2 URLs, 4 domains, 1 IP, 3 email addresses</td></tr>
+<tr><th>Authentication</th><td>SPF softfail, DKIM none, DMARC fail (from mx[.]google[.]com)</td></tr>
+</tbody>
+</table>
+<h4>Reasons</h4>
+<table>
+<thead><tr><th>Points</th><th>Reason</th><th>Rules</th><th>Why it added nothing</th></tr></thead>
+<tbody>
+<tr><td>+25</td><td>The From domain failed DMARC</td><td class="value">dmarc_fail</td><td class="note">-</td></tr>
+<tr><td>+20</td><td>The sender&#39;s domain imitates a brand</td><td class="value">lookalike_sender_domain</td><td class="note">-</td></tr>
+<tr><td>+20</td><td>An attachment is a risky type, or is not what its name says</td><td class="value">attachment_risky_type</td><td class="note">-</td></tr>
+<tr><td>+15</td><td>A link&#39;s text shows one site, but the link goes to another</td><td class="value">link_text_mismatch</td><td class="note">-</td></tr>
+<tr><td>+15</td><td>Replies would go to a different organisation than the sender&#39;s</td><td class="value">reply_to_mismatch</td><td class="note">-</td></tr>
+<tr><td>+10</td><td>The sending server is not allowed to send for the sender&#39;s domain (SPF)</td><td class="value">spf_softfail</td><td class="note">-</td></tr>
+<tr><td>+10</td><td>DKIM failed, is missing, or was not signed by the sender&#39;s own domain</td><td class="value">dkim_none</td><td class="note">-</td></tr>
+<tr><td>+5</td><td>The text pushes for quick action or asks for a login, password or payment</td><td class="value">urgency_wording, credential_request_wording</td><td class="note">-</td></tr>
+<tr><td>+5</td><td>Bounces go to a different organisation than the sender&#39;s (Return-Path)</td><td class="value">return_path_mismatch</td><td class="note">-</td></tr>
+<tr><td>0</td><td>More Authentication-Results headers further down (normal after forwarding)</td><td class="value">extra_auth_results</td><td class="note">-</td></tr>
+</tbody>
+</table>
+<h4>Attachments</h4>
+<table>
+<thead><tr><th>Name</th><th>Declared type</th><th>Real type</th><th>Size</th><th>SHA-256</th></tr></thead>
+<tbody>
+<tr><td class="value">Account_Review.html</td><td>text/html</td><td>text/html</td><td>78</td><td class="value">f679d22f749f5153d0f27088521142f6a55bed15164881b416da0e07e6d54950</td></tr>
+</tbody>
+</table>
+<h4>IOCs (defanged)</h4>
+<table>
+<thead><tr><th>Type</th><th>Value</th><th>Seen</th><th>Found in</th><th>Looked up</th></tr></thead>
+<tbody>
+<tr><td>URL</td><td class="value">hxxps://www[.]paypal[.]com/signin</td><td>2</td><td>text, html:text</td><td>yes</td></tr>
+<tr><td>URL</td><td class="value">hxxp://paypa1-secure[.]test/login</td><td>1</td><td>html:a[href]</td><td>yes</td></tr>
+<tr><td>domain</td><td class="value">www[.]paypal[.]com</td><td>1</td><td>url</td><td>yes</td></tr>
+<tr><td>domain</td><td class="value">paypa1-secure[.]test</td><td>2</td><td>url, email address</td><td>yes</td></tr>
+<tr><td>domain</td><td class="value">paypal[.]com</td><td>1</td><td>email address</td><td>yes</td></tr>
+<tr><td>domain</td><td class="value">mailer-7731[.]test</td><td>2</td><td>email address, header:Message-ID</td><td>yes</td></tr>
+<tr><td>IP</td><td class="value">203[.]0[.]113[.]45</td><td>2</td><td>sender IP, header:Received (hop 1)</td><td>yes</td></tr>
+<tr><td>email address</td><td class="value">service[@]paypal[.]com</td><td>1</td><td>header:From</td><td>yes</td></tr>
+<tr><td>email address</td><td class="value">support[@]paypa1-secure[.]test</td><td>1</td><td>header:Reply-To</td><td>yes</td></tr>
+<tr><td>email address</td><td class="value">bounce[@]mailer-7731[.]test</td><td>1</td><td>header:Return-Path</td><td>yes</td></tr>
+</tbody>
+</table>
+<h4>Findings</h4>
+<ul>
+<li><code>spf_softfail</code>: SPF result: softfail</li>
+<li><code>dkim_none</code>: DKIM result: none</li>
+<li><code>dmarc_fail</code>: DMARC result: fail</li>
+<li><code>extra_auth_results</code>: 1 more Authentication-Results header(s) lower down were ignored (normal after forwarding, suspicious otherwise)</li>
+<li><code>reply_to_mismatch</code>: Reply-To support[@]paypa1-secure[.]test differs from From service[@]paypal[.]com</li>
+<li><code>return_path_mismatch</code>: Return-Path bounce[@]mailer-7731[.]test differs from From service[@]paypal[.]com</li>
+<li><code>lookalike_sender_domain</code>: Reply-To domain paypa1-secure[.]test looks like paypal: look-alike characters in &#34;paypa1&#34; (&#34;1&#34; for &#34;l&#34;)</li>
+<li><code>link_text_mismatch</code>: 1 link shows one domain but goes to another, e.g. &#34;hxxps://www[.]paypal[.]com/signin&#34; goes to paypa1-secure[.]test</li>
+<li><code>urgency_wording</code>: Pressure to act quickly, in the subject and the body: &#34;account has been suspended&#34;, &#34;unusual activity&#34;, &#34;within 24 hours&#34;</li>
+<li><code>credential_request_wording</code>: Asks for a login, password or payment, in the body: &#34;verify your account&#34;</li>
+<li><code>attachment_risky_type</code>: Account_Review.html (a web page: fake login forms and HTML smuggling)</li>
+</ul>
+</section>
+
+<section>
+<h2>forwarded_phish.eml</h2>
+<p><span class="verdict suspicious">SUSPICIOUS 60/100</span> decided by forwarded email 1: a forward is judged by what it carries</p>
+
+<h3>The email</h3>
+<table>
+<tbody>
+<tr><th>Verdict</th><td><span class="verdict likely-benign">LIKELY BENIGN 0/100</span></td></tr>
+<tr><th>Based on</th><td>headers and content only: not enriched (--enrich adds reputation lookups)</td></tr>
+<tr><th>From</th><td class="value">Nimal Perera &lt;REDACTED&gt;</td></tr>
+<tr><th>Reply-To</th><td class="value">-</td></tr>
+<tr><th>Return-Path</th><td class="value">REDACTED</td></tr>
+<tr><th>Subject</th><td>Fwd: Your password expires today</td></tr>
+<tr><th>Date</th><td>Fri, 20 Nov 2026 09:15:00 +0530</td></tr>
+<tr><th>Message-ID</th><td class="value">&lt;fwd-5521[@]example[.]org&gt;</td></tr>
+<tr><th>Received hops</th><td>1</td></tr>
+<tr><th>Sender IP</th><td class="value">-</td></tr>
+<tr><th>IOCs found</th><td>0 URLs, 1 domain, 0 IPs, 1 email address</td></tr>
+<tr><th>Authentication</th><td>SPF pass, DKIM pass, DMARC pass (from mx[.]example[.]org)</td></tr>
+<tr><th>Forwarded emails</th><td>1 (reported separately below)</td></tr>
+</tbody>
+</table>
+<h4>IOCs (defanged)</h4>
+<table>
+<thead><tr><th>Type</th><th>Value</th><th>Seen</th><th>Found in</th><th>Looked up</th></tr></thead>
+<tbody>
+<tr><td>domain</td><td class="value">example[.]org</td><td>2</td><td>email address, header:Message-ID</td><td>skip (allowlisted)</td></tr>
+<tr><td>email address</td><td class="value">REDACTED</td><td>2</td><td>header:From, header:Return-Path</td><td>skip (allowlisted)</td></tr>
+</tbody>
+</table>
+<h4>Findings</h4>
+<p>None so far.</p>
+
+<h3>Forwarded email 1 (level 1)</h3>
+<table>
+<tbody>
+<tr><th>Verdict</th><td><span class="verdict suspicious">SUSPICIOUS 60/100</span></td></tr>
+<tr><th>Based on</th><td>headers and content only: not enriched (--enrich adds reputation lookups)</td></tr>
+<tr><th>ATT&amp;CK</th><td>T1566.002 Phishing: Spearphishing Link</td></tr>
+<tr><th>From</th><td class="value">Microsoft 365 Admin &lt;no-reply[@]micros0ft-support[.]test&gt;</td></tr>
+<tr><th>Reply-To</th><td class="value">-</td></tr>
+<tr><th>Return-Path</th><td class="value">bounce[@]mailer-4410[.]test</td></tr>
+<tr><th>Subject</th><td>Your password expires today</td></tr>
+<tr><th>Date</th><td>Fri, 20 Nov 2026 07:58:30 +0530</td></tr>
+<tr><th>Message-ID</th><td class="value">&lt;pw-7781[@]micros0ft-support[.]test&gt;</td></tr>
+<tr><th>Received hops</th><td>1</td></tr>
+<tr><th>Sender IP</th><td class="value">203[.]0[.]113[.]77 (from Received hop 1, less certain)</td></tr>
+<tr><th>IOCs found</th><td>2 URLs, 4 domains, 1 IP, 2 email addresses</td></tr>
+<tr><th>Authentication</th><td>SPF pass, DKIM pass, DMARC pass (from mx[.]example[.]org)</td></tr>
+</tbody>
+</table>
+<h4>Reasons</h4>
+<table>
+<thead><tr><th>Points</th><th>Reason</th><th>Rules</th><th>Why it added nothing</th></tr></thead>
+<tbody>
+<tr><td>+20</td><td>The sender&#39;s domain imitates a brand</td><td class="value">lookalike_sender_domain</td><td class="note">-</td></tr>
+<tr><td>+15</td><td>A link&#39;s text shows one site, but the link goes to another</td><td class="value">link_text_mismatch</td><td class="note">-</td></tr>
+<tr><td>+15</td><td>The sender&#39;s name claims a brand that did not send the email</td><td class="value">display_name_spoof</td><td class="note">-</td></tr>
+<tr><td>+5</td><td>The text pushes for quick action or asks for a login, password or payment</td><td class="value">urgency_wording, credential_request_wording</td><td class="note">-</td></tr>
+<tr><td>+5</td><td>Bounces go to a different organisation than the sender&#39;s (Return-Path)</td><td class="value">return_path_mismatch</td><td class="note">-</td></tr>
+</tbody>
+</table>
+<h4>Attachments</h4>
+<table>
+<thead><tr><th>Name</th><th>Declared type</th><th>Real type</th><th>Size</th><th>SHA-256</th></tr></thead>
+<tbody>
+<tr><td class="value">Password_Policy.txt</td><td>text/plain</td><td>text/plain</td><td>45</td><td class="value">7ec0a3917dd92f9fff6a722c0311e4304c2ac6017e735f7f94f991fa1e203067</td></tr>
+</tbody>
+</table>
+<h4>IOCs (defanged)</h4>
+<table>
+<thead><tr><th>Type</th><th>Value</th><th>Seen</th><th>Found in</th><th>Looked up</th></tr></thead>
+<tbody>
+<tr><td>URL</td><td class="value">hxxp://micros0ft-login[.]test/auth?user=nimal</td><td>2</td><td>text, html:a[href]</td><td>yes</td></tr>
+<tr><td>URL</td><td class="value">hxxps://login[.]microsoftonline[.]com/keep-password</td><td>1</td><td>html:text</td><td>yes</td></tr>
+<tr><td>domain</td><td class="value">micros0ft-login[.]test</td><td>1</td><td>url</td><td>yes</td></tr>
+<tr><td>domain</td><td class="value">login[.]microsoftonline[.]com</td><td>1</td><td>url</td><td>yes</td></tr>
+<tr><td>domain</td><td class="value">micros0ft-support[.]test</td><td>2</td><td>email address, header:Message-ID</td><td>yes</td></tr>
+<tr><td>domain</td><td class="value">mailer-4410[.]test</td><td>1</td><td>email address</td><td>yes</td></tr>
+<tr><td>IP</td><td class="value">203[.]0[.]113[.]77</td><td>2</td><td>sender IP, header:Received (hop 1)</td><td>yes</td></tr>
+<tr><td>email address</td><td class="value">no-reply[@]micros0ft-support[.]test</td><td>1</td><td>header:From</td><td>yes</td></tr>
+<tr><td>email address</td><td class="value">bounce[@]mailer-4410[.]test</td><td>1</td><td>header:Return-Path</td><td>yes</td></tr>
+</tbody>
+</table>
+<h4>Findings</h4>
+<ul>
+<li><code>return_path_mismatch</code>: Return-Path bounce[@]mailer-4410[.]test differs from From no-reply[@]micros0ft-support[.]test</li>
+<li><code>display_name_spoof</code>: Display name &#34;Microsoft 365 Admin&#34; claims microsoft, but sender is micros0ft-support[.]test</li>
+<li><code>lookalike_sender_domain</code>: From domain micros0ft-support[.]test looks like microsoft: look-alike characters in &#34;micros0ft&#34; (&#34;0&#34; for &#34;o&#34;)</li>
+<li><code>link_text_mismatch</code>: 1 link shows one domain but goes to another, e.g. &#34;hxxps://login[.]microsoftonline[.]com/keep-password&#34; goes to micros0ft-login[.]test</li>
+<li><code>urgency_wording</code>: Pressure to act quickly, in the subject and the body: &#34;expires today&#34;</li>
+<li><code>credential_request_wording</code>: Asks for a login, password or payment, in the subject and the body: &#34;password expires&#34;, &#34;keep your current password&#34;</li>
+</ul>
+</section>
+
+<section>
+<h2>attachments_phish.eml</h2>
+<p><span class="verdict suspicious">SUSPICIOUS 50/100</span></p>
+
+<h3>The email</h3>
+<table>
+<tbody>
+<tr><th>Verdict</th><td><span class="verdict suspicious">SUSPICIOUS 50/100</span></td></tr>
+<tr><th>Based on</th><td>headers and content only: not enriched (--enrich adds reputation lookups)</td></tr>
+<tr><th>ATT&amp;CK</th><td>T1566.001 Phishing: Spearphishing Attachment</td></tr>
+<tr><th>From</th><td class="value">Accounts Team &lt;accounts[@]invoice-portal[.]test&gt;</td></tr>
+<tr><th>Reply-To</th><td class="value">-</td></tr>
+<tr><th>Return-Path</th><td class="value">accounts[@]invoice-portal[.]test</td></tr>
+<tr><th>Subject</th><td>Invoice INV-2026-1142 and payment details</td></tr>
+<tr><th>Date</th><td>Sat, 21 Nov 2026 08:12:30 +0530</td></tr>
+<tr><th>Message-ID</th><td class="value">&lt;inv-1142[@]invoice-portal[.]test&gt;</td></tr>
+<tr><th>Received hops</th><td>1</td></tr>
+<tr><th>Sender IP</th><td class="value">198[.]51[.]100[.]23 (from Received hop 1, less certain)</td></tr>
+<tr><th>IOCs found</th><td>0 URLs, 1 domain, 1 IP, 1 email address</td></tr>
+<tr><th>Authentication</th><td>SPF pass, DKIM pass, DMARC pass (from mx[.]example[.]org)</td></tr>
+</tbody>
+</table>
+<h4>Reasons</h4>
+<table>
+<thead><tr><th>Points</th><th>Reason</th><th>Rules</th><th>Why it added nothing</th></tr></thead>
+<tbody>
+<tr><td>+30</td><td>An attachment hides its real type behind a double extension</td><td class="value">attachment_double_extension</td><td class="note">-</td></tr>
+<tr><td>+20</td><td>An attachment is a risky type, or is not what its name says</td><td class="value">attachment_risky_type, attachment_type_mismatch, attachment_encrypted_archive</td><td class="note">-</td></tr>
+</tbody>
+</table>
+<h4>Attachments</h4>
+<table>
+<thead><tr><th>Name</th><th>Declared type</th><th>Real type</th><th>Size</th><th>SHA-256</th></tr></thead>
+<tbody>
+<tr><td class="value">Invoice_INV-2026-1142.pdf</td><td>application/pdf</td><td>text/html</td><td>78</td><td class="value">f679d22f749f5153d0f27088521142f6a55bed15164881b416da0e07e6d54950</td></tr>
+<tr><td class="value">Statement.pdf.exe</td><td>application/octet-stream</td><td>text/plain</td><td>45</td><td class="value">7ec0a3917dd92f9fff6a722c0311e4304c2ac6017e735f7f94f991fa1e203067</td></tr>
+<tr><td class="value">Payment_Details[.]zip</td><td>application/zip</td><td>application/zip</td><td>267</td><td class="value">e16ad1f3fdac18c05dfc152aad74368ba80a98abd52f2d83c731b63a9059c09c</td></tr>
+<tr><td class="value">Terms.txt</td><td>text/plain</td><td>text/plain</td><td>54</td><td class="value">1de02ebe63f22dee6f10ab4a52eadfc3418c4cc35e425f2a08d103488cdc42a6</td></tr>
+</tbody>
+</table>
+<p>Payment_Details[.]zip (password-protected) contains: <code>Payment_Details.pdf.js</code></p>
+<h4>IOCs (defanged)</h4>
+<table>
+<thead><tr><th>Type</th><th>Value</th><th>Seen</th><th>Found in</th><th>Looked up</th></tr></thead>
+<tbody>
+<tr><td>domain</td><td class="value">invoice-portal[.]test</td><td>2</td><td>email address, header:Message-ID</td><td>yes</td></tr>
+<tr><td>IP</td><td class="value">198[.]51[.]100[.]23</td><td>2</td><td>sender IP, header:Received (hop 1)</td><td>yes</td></tr>
+<tr><td>email address</td><td class="value">accounts[@]invoice-portal[.]test</td><td>2</td><td>header:From, header:Return-Path</td><td>yes</td></tr>
+</tbody>
+</table>
+<h4>Findings</h4>
+<ul>
+<li><code>attachment_risky_type</code>: Statement.pdf.exe (a program that runs when opened); Payment_Details[.]zip contains Payment_Details.pdf.js (a script that runs when opened)</li>
+<li><code>attachment_double_extension</code>: Statement.pdf.exe; Payment_Details[.]zip contains Payment_Details.pdf.js</li>
+<li><code>attachment_type_mismatch</code>: Invoice_INV-2026-1142.pdf is named .pdf but its content is text/html</li>
+<li><code>attachment_encrypted_archive</code>: Payment_Details[.]zip is password-protected, so scanners cannot check what is inside</li>
+</ul>
+</section>
+
+<section>
+<h2>broken_charset.eml</h2>
+<p><span class="verdict likely-benign">LIKELY BENIGN 0/100</span></p>
+
+<h3>The email</h3>
+<table>
+<tbody>
+<tr><th>Verdict</th><td><span class="verdict likely-benign">LIKELY BENIGN 0/100</span></td></tr>
+<tr><th>Based on</th><td>headers and content only: not enriched (--enrich adds reputation lookups)</td></tr>
+<tr><th>From</th><td class="value"> &lt;&gt;</td></tr>
+<tr><th>Reply-To</th><td class="value">-</td></tr>
+<tr><th>Return-Path</th><td class="value">-</td></tr>
+<tr><th>Subject</th><td>Broken charset test</td></tr>
+<tr><th>Date</th><td>-</td></tr>
+<tr><th>Message-ID</th><td class="value">-</td></tr>
+<tr><th>Received hops</th><td>0</td></tr>
+<tr><th>Sender IP</th><td class="value">-</td></tr>
+<tr><th>IOCs found</th><td>0 URLs, 0 domains, 0 IPs, 0 email addresses</td></tr>
+<tr><th>Authentication</th><td>SPF unknown, DKIM unknown, DMARC unknown (no trusted header)</td></tr>
+</tbody>
+</table>
+<h4>Reasons</h4>
+<table>
+<thead><tr><th>Points</th><th>Reason</th><th>Rules</th><th>Why it added nothing</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>No trusted Authentication-Results header, so SPF, DKIM and DMARC are unknown</td><td class="value">no_auth_results</td><td class="note">-</td></tr>
+</tbody>
+</table>
+<h4>Findings</h4>
+<ul>
+<li><code>no_auth_results</code>: No trusted Authentication-Results header: SPF/DKIM/DMARC unknown</li>
+</ul>
+<p class="note">Parsing notes: From header has no readable address, LookupError decoding text/plain part</p>
+</section>
+</main>
+</body>
+</html>

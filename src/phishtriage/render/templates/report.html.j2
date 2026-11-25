@@ -1,0 +1,141 @@
+{#- The HTML report (week 4, step 11). Autoescape is on: every {{ value }} has & < > " '
+    written as entities. Nothing here is a link, and the CSP lets nothing load or run. -#}
+{%- macro answer_list(lines) -%}
+{%- if lines -%}
+<ul>{% for answer in lines %}<li{% if answer.flagged %} class="flagged"{% elif answer.skipped %} class="skipped"{% endif %}>{{ answer.text }}</li>{% endfor %}</ul>
+{%- else -%}
+-
+{%- endif -%}
+{%- endmacro %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="{{ csp }}">
+<meta name="referrer" content="no-referrer">
+<title>PhishTriage report</title>
+<style>{{ css }}</style>
+</head>
+<body>
+<main>
+<header>
+<h1>PhishTriage report</h1>
+<ul>
+<li><small>{{ report.tool }} {{ report.version }}, generated {{ report.generated_at }} (UTC).</small></li>
+<li><small>Scoring: {{ report.scoring_source }}, SHA-256 <code>{{ report.scoring_sha256 }}</code>.</small></li>
+<li><small>{% if report.enriched %}With reputation lookups.{% else %}Headers and content only: no reputation lookups.{% endif %}</small></li>
+{% if report.redacted %}
+<li><small>Pieces of text your addresses were removed from: {{ report.redacted }}.</small></li>
+{% endif %}
+<li><small>Every link, address, domain and IP is defanged: nothing in this report can be clicked.</small></li>
+</ul>
+</header>
+
+<section>
+<h2>Summary</h2>
+<p>Worst first; each file has its own section below.</p>
+<table>
+<thead><tr><th>File</th><th>Verdict</th><th>Decided by</th></tr></thead>
+<tbody>
+{% for file in ranked(report.files) %}
+{% if file.error %}
+<tr><td>{{ file.name }}</td><td>could not be analysed</td><td>-</td></tr>
+{% else %}
+<tr><td>{{ file.name }}</td><td><span class="verdict {{ verdict_class(file.verdict) }}">{{ verdict(file.verdict) }}</span></td><td>{{ "forwarded email " ~ file.decided_by if file.decided_by else "the email itself" }}</td></tr>
+{% endif %}
+{% endfor %}
+</tbody>
+</table>
+</section>
+{% for file in report.files %}
+
+<section>
+<h2>{{ file.name }}</h2>
+{% if file.error %}
+<p>Could not be analysed: {{ file.error }}</p>
+{% else %}
+<p><span class="verdict {{ verdict_class(file.verdict) }}">{{ verdict(file.verdict) }}</span>{% if file.decided_by %} decided by forwarded email {{ file.decided_by }}: a forward is judged by what it carries{% endif %}</p>
+{% for email in file.emails %}
+
+<h3>{% if email.level == 0 %}The email{% else %}Forwarded email {{ email.where }} (level {{ email.level }}){% endif %}</h3>
+<table>
+<tbody>
+<tr><th>Verdict</th><td><span class="verdict {{ verdict_class(email.score) }}">{{ verdict(email.score) }}</span></td></tr>
+<tr><th>Based on</th><td>{{ email.score.basis_text }}</td></tr>
+{% if email.score.attack %}
+<tr><th>ATT&amp;CK</th><td>{{ attack(email.score) }}</td></tr>
+{% endif %}
+<tr><th>From</th><td class="value">{{ sender(email) }}</td></tr>
+<tr><th>Reply-To</th><td class="value">{{ email.reply_to | join(", ") or "-" }}</td></tr>
+<tr><th>Return-Path</th><td class="value">{{ email.return_path or "-" }}</td></tr>
+<tr><th>Subject</th><td>{{ email.subject or "-" }}</td></tr>
+<tr><th>Date</th><td>{{ email.date or "-" }}</td></tr>
+<tr><th>Message-ID</th><td class="value">{{ email.message_id or "-" }}</td></tr>
+<tr><th>Received hops</th><td>{{ email.hops }}</td></tr>
+<tr><th>Sender IP</th><td class="value">{{ sender_ip(email) }}</td></tr>
+<tr><th>IOCs found</th><td>{{ count_iocs(email.iocs) }}</td></tr>
+<tr><th>Authentication</th><td>SPF {{ email.auth.spf }}, DKIM {{ email.auth.dkim }}, DMARC {{ email.auth.dmarc }} ({{ email.auth.source }}){% if email.auth.compauth != "unknown" %}, COMPAUTH {{ email.auth.compauth }}{% if email.auth.compauth_reason %} (reason {{ email.auth.compauth_reason }}){% endif %}{% endif %}</td></tr>
+{% if email.forwarded %}
+<tr><th>Forwarded emails</th><td>{{ email.forwarded }} (reported separately below)</td></tr>
+{% endif %}
+</tbody>
+</table>
+{% if email.score.reasons %}
+<h4>Reasons</h4>
+<table>
+<thead><tr><th>Points</th><th>Reason</th><th>Rules</th><th>Why it added nothing</th></tr></thead>
+<tbody>
+{% for reason in email.score.reasons %}
+<tr><td>{{ points(reason) }}</td><td>{{ reason.label }}</td><td class="value">{{ reason.rules | join(", ") }}</td><td class="note">{{ reason.note or "-" }}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+{% endif %}
+{% if email.attachments %}
+<h4>Attachments</h4>
+<table>
+<thead><tr><th>Name</th><th>Declared type</th><th>Real type</th><th>Size</th><th>SHA-256</th>{% if report.enriched %}<th>Reputation</th>{% endif %}</tr></thead>
+<tbody>
+{% for att in email.attachments %}
+<tr><td class="value">{{ att.name }}</td><td>{{ att.declared_type }}</td><td>{{ att.real_type or "?" }}</td><td>{{ att.size }}</td><td class="value">{{ att.sha256 }}</td>{% if report.enriched %}<td>{{ answer_list(att.reputation) }}</td>{% endif %}</tr>
+{% endfor %}
+</tbody>
+</table>
+{% for att in email.attachments if att.members %}
+<p>{{ att.name }}{{ " (password-protected)" if att.encrypted else "" }} contains: <code>{{ att.members | join(", ") }}</code></p>
+{% endfor %}
+{% endif %}
+{% if email.iocs %}
+<h4>IOCs (defanged)</h4>
+<table>
+<thead><tr><th>Type</th><th>Value</th><th>Seen</th><th>Found in</th><th>{{ "Reputation" if report.enriched else "Looked up" }}</th></tr></thead>
+<tbody>
+{% for ioc in email.iocs %}
+<tr><td>{{ ioc_label(ioc.kind) }}</td><td class="value">{{ ioc.value }}</td><td>{{ ioc.seen }}</td><td>{{ ioc.sources | join(", ") }}</td><td>{% if report.enriched %}{{ answer_list(ioc.reputation) }}{% else %}{{ lookup(ioc, false) }}{% endif %}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+{% endif %}
+<h4>Findings</h4>
+{% if email.findings %}
+<ul>
+{% for finding in email.findings %}
+<li><code>{{ finding.rule }}</code>: {{ finding.detail }}</li>
+{% endfor %}
+</ul>
+{% else %}
+<p>None so far.</p>
+{% endif %}
+{% if email.not_written %}
+<p class="note">Not written yet: {{ email.not_written | join(", ") }}</p>
+{% endif %}
+{% if email.defects %}
+<p class="note">Parsing notes: {{ email.defects | join(", ") }}</p>
+{% endif %}
+{% endfor %}
+{% endif %}
+</section>
+{% endfor %}
+</main>
+</body>
+</html>

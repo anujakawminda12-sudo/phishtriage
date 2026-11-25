@@ -1,0 +1,362 @@
+{
+  "schema_version": 1,
+  "defanged": true,
+  "tool": "PhishTriage",
+  "version": "0.1.0",
+  "generated_at": "2026-11-24T14:14:20Z",
+  "scoring_source": "built-in scoring.yaml",
+  "scoring_sha256": "77c8089435bc8c70f6ad79a74e98004b65a64cf2c9255bccfe9adc2ed190bcf3",
+  "enriched": false,
+  "redacted": 0,
+  "files": [
+    {
+      "name": "phish_open_redirect.eml",
+      "verdict": {
+        "verdict": "suspicious",
+        "total": 35,
+        "attack": [
+          {
+            "id": "T1566.002",
+            "name": "Phishing: Spearphishing Link"
+          }
+        ],
+        "basis": "not_enriched",
+        "basis_text": "headers and content only: not enriched (--enrich adds reputation lookups)",
+        "unanswered": 0,
+        "reasons": [
+          {
+            "signal": "brand_in_sender_domain",
+            "label": "The sender's domain uses a brand's name but is not one of the brand's",
+            "points": 15,
+            "rules": [
+              "brand_in_sender_domain"
+            ],
+            "details": [
+              "From domain docusign-notice[.]test uses the name docusign but is not docusign's (docusign[.]com, docusign[.]net)"
+            ],
+            "note": "",
+            "override": false
+          },
+          {
+            "signal": "display_name_spoof",
+            "label": "The sender's name claims a brand that did not send the email",
+            "points": 15,
+            "rules": [
+              "display_name_spoof"
+            ],
+            "details": [
+              "Display name \"DocuSign\" claims docusign, but sender is docusign-notice[.]test"
+            ],
+            "note": "",
+            "override": false
+          },
+          {
+            "signal": "hidden_destination",
+            "label": "A link hides where it goes (URL shortener or open redirect)",
+            "points": 5,
+            "rules": [
+              "open_redirect"
+            ],
+            "details": [
+              "1 link on one site forwards to another, e.g. www[.]example[.]com forwards to docs-review[.]test"
+            ],
+            "note": "",
+            "override": false
+          }
+        ]
+      },
+      "decided_by": "",
+      "emails": [
+        {
+          "where": "",
+          "level": 0,
+          "from_name": "DocuSign",
+          "from_address": "dse[@]docusign-notice[.]test",
+          "other_from": [],
+          "reply_to": [],
+          "return_path": "",
+          "subject": "Please review and sign: Contract_2026.pdf",
+          "date": "Mon, 23 Nov 2026 09:00:00 +0000",
+          "message_id": "<9f2c4b[@]docusign-notice[.]test>",
+          "hops": 1,
+          "sender_ip": "203[.]0[.]113[.]88",
+          "sender_ip_source": "Authentication-Results",
+          "sender_ip_certain": true,
+          "auth": {
+            "source": "from mx[.]example[.]org",
+            "found": true,
+            "spf": "pass",
+            "dkim": "pass",
+            "dmarc": "pass",
+            "compauth": "unknown",
+            "compauth_reason": ""
+          },
+          "score": {
+            "verdict": "suspicious",
+            "total": 35,
+            "attack": [
+              {
+                "id": "T1566.002",
+                "name": "Phishing: Spearphishing Link"
+              }
+            ],
+            "basis": "not_enriched",
+            "basis_text": "headers and content only: not enriched (--enrich adds reputation lookups)",
+            "unanswered": 0,
+            "reasons": [
+              {
+                "signal": "brand_in_sender_domain",
+                "label": "The sender's domain uses a brand's name but is not one of the brand's",
+                "points": 15,
+                "rules": [
+                  "brand_in_sender_domain"
+                ],
+                "details": [
+                  "From domain docusign-notice[.]test uses the name docusign but is not docusign's (docusign[.]com, docusign[.]net)"
+                ],
+                "note": "",
+                "override": false
+              },
+              {
+                "signal": "display_name_spoof",
+                "label": "The sender's name claims a brand that did not send the email",
+                "points": 15,
+                "rules": [
+                  "display_name_spoof"
+                ],
+                "details": [
+                  "Display name \"DocuSign\" claims docusign, but sender is docusign-notice[.]test"
+                ],
+                "note": "",
+                "override": false
+              },
+              {
+                "signal": "hidden_destination",
+                "label": "A link hides where it goes (URL shortener or open redirect)",
+                "points": 5,
+                "rules": [
+                  "open_redirect"
+                ],
+                "details": [
+                  "1 link on one site forwards to another, e.g. www[.]example[.]com forwards to docs-review[.]test"
+                ],
+                "note": "",
+                "override": false
+              }
+            ]
+          },
+          "attachments": [],
+          "iocs": [
+            {
+              "kind": "url",
+              "value": "hxxps://www[.]example[.]com/url?q=hxxps://docs-review[.]test/view/7781&sa=D",
+              "seen": 2,
+              "sources": [
+                "text",
+                "html:a[href]"
+              ],
+              "allowlisted": false,
+              "group": "example[.]com",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "url",
+              "value": "hxxps://docs-review[.]test/view/7781",
+              "seen": 2,
+              "sources": [
+                "text (inside a link to www[.]example[.]com)",
+                "html:a[href] (inside a link to www[.]example[.]com)"
+              ],
+              "allowlisted": false,
+              "group": "docs-review[.]test",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "url",
+              "value": "hxxps://click[.]docusign-notice[.]test/track?url=hxxps://docusign-notice[.]test/help",
+              "seen": 1,
+              "sources": [
+                "text"
+              ],
+              "allowlisted": false,
+              "group": "docusign-notice[.]test",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "url",
+              "value": "hxxps://docusign-notice[.]test/help",
+              "seen": 2,
+              "sources": [
+                "text (inside a link to click[.]docusign-notice[.]test)",
+                "html:a[href] (inside a link to click[.]docusign-notice[.]test)"
+              ],
+              "allowlisted": false,
+              "group": "docusign-notice[.]test",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "url",
+              "value": "hxxps://images[.]example[.]org/proxy?src=hxxps://cdn[.]example[.]net/logo[.]png",
+              "seen": 1,
+              "sources": [
+                "html:img[src]"
+              ],
+              "allowlisted": false,
+              "group": "example[.]org",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "url",
+              "value": "hxxps://cdn[.]example[.]net/logo[.]png",
+              "seen": 1,
+              "sources": [
+                "html:img[src] (inside a link to images[.]example[.]org)"
+              ],
+              "allowlisted": true,
+              "group": "example[.]net",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "url",
+              "value": "hxxps://click[.]docusign-notice[.]test/track?url=https%3A%2F%2Fdocusign-notice[.]test%2Fhelp",
+              "seen": 1,
+              "sources": [
+                "html:a[href]"
+              ],
+              "allowlisted": false,
+              "group": "docusign-notice[.]test",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "domain",
+              "value": "www[.]example[.]com",
+              "seen": 1,
+              "sources": [
+                "url"
+              ],
+              "allowlisted": true,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "domain",
+              "value": "docs-review[.]test",
+              "seen": 1,
+              "sources": [
+                "url"
+              ],
+              "allowlisted": false,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "domain",
+              "value": "click[.]docusign-notice[.]test",
+              "seen": 2,
+              "sources": [
+                "url"
+              ],
+              "allowlisted": false,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "domain",
+              "value": "docusign-notice[.]test",
+              "seen": 3,
+              "sources": [
+                "url",
+                "email address",
+                "header:Message-ID"
+              ],
+              "allowlisted": false,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "domain",
+              "value": "images[.]example[.]org",
+              "seen": 1,
+              "sources": [
+                "url"
+              ],
+              "allowlisted": true,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "domain",
+              "value": "cdn[.]example[.]net",
+              "seen": 1,
+              "sources": [
+                "url"
+              ],
+              "allowlisted": true,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "ip",
+              "value": "203[.]0[.]113[.]88",
+              "seen": 2,
+              "sources": [
+                "sender IP",
+                "header:Received (hop 1)"
+              ],
+              "allowlisted": false,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "email",
+              "value": "dse[@]docusign-notice[.]test",
+              "seen": 1,
+              "sources": [
+                "header:From"
+              ],
+              "allowlisted": false,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            }
+          ],
+          "findings": [
+            {
+              "rule": "display_name_spoof",
+              "detail": "Display name \"DocuSign\" claims docusign, but sender is docusign-notice[.]test",
+              "facts": {}
+            },
+            {
+              "rule": "brand_in_sender_domain",
+              "detail": "From domain docusign-notice[.]test uses the name docusign but is not docusign's (docusign[.]com, docusign[.]net)",
+              "facts": {}
+            },
+            {
+              "rule": "open_redirect",
+              "detail": "1 link on one site forwards to another, e.g. www[.]example[.]com forwards to docs-review[.]test",
+              "facts": {}
+            }
+          ],
+          "forwarded": 0,
+          "defects": [],
+          "not_written": []
+        }
+      ],
+      "error": ""
+    }
+  ]
+}

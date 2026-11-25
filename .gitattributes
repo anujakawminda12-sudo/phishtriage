@@ -1,0 +1,12 @@
+# Store every text file with LF line endings, on every machine and every clone, so a
+# file's bytes never depend on who cloned it (`sha256sum src/phishtriage/scoring.yaml`
+# then gives the SHA-256 published in the README on any clone).
+* text=auto eol=lf
+
+# Test emails are kept byte for byte: broken_charset.eml has CRLF line endings, the way
+# email travels between mail servers. tests/test_fixture_bytes.py checks every fixture.
+*.eml -text
+
+# Binary files: never converted, never diffed as text
+*.gif binary
+*.png binary

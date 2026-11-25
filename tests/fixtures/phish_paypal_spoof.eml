@@ -1,0 +1,44 @@
+Return-Path: <bounce@mailer-7731.test>
+Authentication-Results: mx.google.com;
+       spf=softfail (google.com: domain of transitioning bounce@mailer-7731.test does not designate 203.0.113.45 as permitted sender) smtp.mailfrom=bounce@mailer-7731.test;
+       dkim=none;
+       dmarc=fail (p=REJECT sp=REJECT dis=QUARANTINE) header.from=paypal.com
+Received: from mailer-7731.test (unknown [203.0.113.45])
+        by mx.google.com with ESMTP id x9y8z7
+        for <student@example.org>; Wed, 18 Nov 2026 02:41:10 -0800 (PST)
+Authentication-Results: fake.server; spf=pass smtp.mailfrom=paypal.com; dkim=pass header.d=paypal.com; dmarc=pass header.from=paypal.com
+From: "PayPal Security" <service@paypal.com>
+Reply-To: support@paypa1-secure.test
+To: student@example.org
+Subject: Your account has been suspended
+Date: Wed, 18 Nov 2026 10:41:00 +0000
+Message-ID: <a8f3e2@mailer-7731.test>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="outer"
+
+--outer
+Content-Type: multipart/alternative; boundary="inner"
+
+--inner
+Content-Type: text/plain; charset="utf-8"
+
+We noticed unusual activity. Verify your account within 24 hours:
+https://www.paypal.com/signin
+
+--inner
+Content-Type: text/html; charset="utf-8"
+
+<html><body><p>We noticed unusual activity. Verify your account within 24 hours:</p>
+<p><a href="http://paypa1-secure.test/login">https://www.paypal.com/signin</a></p></body></html>
+
+--inner--
+
+--outer
+Content-Type: text/html; name="Account_Review.html"
+Content-Disposition: attachment; filename="Account_Review.html"
+Content-Transfer-Encoding: base64
+
+PGh0bWw+PGJvZHk+PHA+SGFybWxlc3MgUGhpc2hUcmlhZ2UgdGVzdCBmaWxlLiBOb3QgbWFsd2Fy
+ZS48L3A+PC9ib2R5PjwvaHRtbD4K
+
+--outer--

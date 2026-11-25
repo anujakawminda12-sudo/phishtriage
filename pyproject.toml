@@ -1,0 +1,68 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "phishtriage"
+version = "0.1.0"
+description = "Phishing email analysis and triage automation: .eml in, explainable verdict out."
+readme = "README.md"
+# 3.12 is the oldest version CI tests, and the proposal's minimum (week 3, step 1)
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Anuja Kawminda" }]
+dependencies = [
+    "typer>=0.12",
+    "rich>=13",
+    "tldextract>=5.3",
+    "beautifulsoup4>=4.12",
+    "python-magic>=0.4.27",
+    # Week 3: threat-intel lookups (only with --enrich) and API keys from .env
+    "httpx>=0.28,<1",
+    "python-dotenv>=1.0",
+    # Week 4: scoring.yaml (read with yaml.safe_load only)
+    "pyyaml>=6.0",
+    # Week 4: Markdown and HTML reports, and the check that reads them back
+    "jinja2>=3.1",
+    "markdown-it-py>=3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-cov>=5",
+    # Pinned to one minor version: a newer ruff can format code differently and fail CI
+    # even when nothing in the code changed
+    "ruff>=0.17,<0.18",
+    # Week 3: fake HTTP responses for httpx, so tests never call a real API
+    "respx>=0.22",
+    # Week 4: check every JSON report against report.schema.json (tests only)
+    "jsonschema>=4.23",
+]
+
+[project.scripts]
+phishtriage = "phishtriage.cli:run"  # week 4: run() sets the exit codes
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/phishtriage"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+# Week 3, step 7: a file or database connection left open fails the test, instead of a
+# warning that is easy to miss (Python 3.13+ warns about unclosed sqlite3 connections)
+filterwarnings = [
+    "error::ResourceWarning",
+    "error::pytest.PytestUnraisableExceptionWarning",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+# Week 4: never read these folders, git or not. Until git is set up (after week 5) ruff
+# does not apply .gitignore, so `ruff format .` would read, and could rewrite, Markdown
+# files in samples/ (notes on real emails) and reports/ (generated reports).
+extend-exclude = ["samples", "reports"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]

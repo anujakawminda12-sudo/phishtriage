@@ -1,0 +1,634 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:phishtriage:report:1",
+  "title": "PhishTriage report",
+  "description": "The JSON report of PhishTriage (phishtriage analyze --json). Every value from an email is defanged and your own addresses are REDACTED, as in every other report format; a script that needs live values must refang them itself, on purpose. Non-ASCII characters are written as \\uXXXX escapes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "defanged",
+    "tool",
+    "version",
+    "generated_at",
+    "scoring_source",
+    "scoring_sha256",
+    "enriched",
+    "redacted",
+    "files"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "description": "Changes when this schema changes in a way that breaks readers"
+    },
+    "defanged": {
+      "const": true,
+      "description": "Always true: no value in the report is live"
+    },
+    "tool": {
+      "const": "PhishTriage",
+      "description": "The tool that wrote the report"
+    },
+    "version": {
+      "type": "string",
+      "description": "PhishTriage's version"
+    },
+    "generated_at": {
+      "type": "string",
+      "description": "When the report was made, UTC, ISO 8601",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "scoring_source": {
+      "type": "string",
+      "description": "'built-in scoring.yaml', or the name of the scoring file given"
+    },
+    "scoring_sha256": {
+      "type": "string",
+      "description": "SHA-256 of the scoring file: which exact weights made the verdicts, lower-case hex",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "enriched": {
+      "type": "boolean",
+      "description": "True when reputation lookups were made (--enrich)"
+    },
+    "redacted": {
+      "type": "integer",
+      "description": "How many pieces of text had one of your addresses removed",
+      "minimum": 0
+    },
+    "files": {
+      "type": "array",
+      "description": "Every file: analysed ones first, in the order given, then those that failed",
+      "items": {
+        "$ref": "#/$defs/file"
+      }
+    }
+  },
+  "$defs": {
+    "attack_tag": {
+      "type": "object",
+      "description": "A MITRE ATT&CK technique the evidence points to",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "T1566",
+            "T1566.001",
+            "T1566.002"
+          ],
+          "description": "T1566 Phishing; .001 Spearphishing Attachment; .002 Spearphishing Link"
+        },
+        "name": {
+          "type": "string",
+          "description": "The technique's name in ATT&CK"
+        }
+      }
+    },
+    "reason": {
+      "type": "object",
+      "description": "One signal from scoring.yaml and what it added to the score",
+      "additionalProperties": false,
+      "required": [
+        "signal",
+        "label",
+        "points",
+        "rules",
+        "details",
+        "note",
+        "override"
+      ],
+      "properties": {
+        "signal": {
+          "type": "string",
+          "description": "The signal's name in scoring.yaml (or the rule, for a rule scoring.yaml does not know)"
+        },
+        "label": {
+          "type": "string",
+          "description": "What the signal means, in plain words"
+        },
+        "points": {
+          "type": "integer",
+          "description": "Points added; 0 if nothing counted, or the signal is worth 0",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "rules": {
+          "type": "array",
+          "description": "The rules of the findings behind it",
+          "items": {
+            "type": "string"
+          }
+        },
+        "details": {
+          "type": "array",
+          "description": "Those findings' details",
+          "items": {
+            "type": "string"
+          }
+        },
+        "note": {
+          "type": "string",
+          "description": "Why it added nothing, e.g. '1 of 92 engines say malicious; 3 needed'; empty when it counted"
+        },
+        "override": {
+          "type": "boolean",
+          "description": "True if it made the verdict malicious on its own"
+        }
+      }
+    },
+    "score": {
+      "type": "object",
+      "description": "A verdict: one email's, or a whole file's (its worst email)",
+      "additionalProperties": false,
+      "required": [
+        "verdict",
+        "total",
+        "attack",
+        "basis",
+        "basis_text",
+        "unanswered",
+        "reasons"
+      ],
+      "properties": {
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "malicious",
+            "suspicious",
+            "likely benign"
+          ],
+          "description": "70-100 malicious, 25-69 suspicious, 0-24 likely benign (scoring.yaml)"
+        },
+        "total": {
+          "type": "integer",
+          "description": "The score, 0-100 (100 when an override decided it)",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "attack": {
+          "type": "array",
+          "description": "ATT&CK techniques; empty for likely benign",
+          "items": {
+            "$ref": "#/$defs/attack_tag"
+          }
+        },
+        "basis": {
+          "type": "string",
+          "enum": [
+            "not_enriched",
+            "complete",
+            "partial"
+          ],
+          "description": "What the score could use: no lookups, every lookup answered, or some unanswered"
+        },
+        "basis_text": {
+          "type": "string",
+          "description": "The basis, as a sentence"
+        },
+        "unanswered": {
+          "type": "integer",
+          "description": "With basis 'partial': lookups that got no answer",
+          "minimum": 0
+        },
+        "reasons": {
+          "type": "array",
+          "description": "What counted first, most points first; then what did not count",
+          "items": {
+            "$ref": "#/$defs/reason"
+          }
+        }
+      }
+    },
+    "answer": {
+      "type": "object",
+      "description": "One line of reputation: a service's answer, a domain's age, or why a value was not looked up",
+      "additionalProperties": false,
+      "required": [
+        "text",
+        "flagged",
+        "skipped",
+        "answered"
+      ],
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "The line, e.g. 'VirusTotal: 5 of 95 engines: malicious'"
+        },
+        "flagged": {
+          "type": "boolean",
+          "description": "This answer became a finding"
+        },
+        "skipped": {
+          "type": "boolean",
+          "description": "This line says why the value was not looked up"
+        },
+        "answered": {
+          "type": "boolean",
+          "description": "The service really answered (found, or did not know the value)"
+        }
+      }
+    },
+    "ioc": {
+      "type": "object",
+      "description": "An indicator of compromise found in the email",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "value",
+        "seen",
+        "sources",
+        "allowlisted",
+        "group",
+        "looked_up",
+        "reputation"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "url",
+            "domain",
+            "ip",
+            "email"
+          ],
+          "description": "What it is"
+        },
+        "value": {
+          "type": "string",
+          "description": "The value, defanged: hxxps://evil[.]test, evil[.]test, 203[.]0[.]113[.]9, a[@]evil[.]test"
+        },
+        "seen": {
+          "type": "integer",
+          "description": "How many times it is in the email",
+          "minimum": 1
+        },
+        "sources": {
+          "type": "array",
+          "description": "Where it was found, e.g. 'text', 'html:a[href]', 'header:Reply-To'",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowlisted": {
+          "type": "boolean",
+          "description": "On the allowlist, so not looked up (still listed: allowlisted is not safe)"
+        },
+        "group": {
+          "type": "string",
+          "description": "URLs: their registered domain, defanged, for grouping; empty for other kinds"
+        },
+        "looked_up": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "With --enrich: was a lookup planned; null without --enrich"
+        },
+        "reputation": {
+          "type": "array",
+          "description": "With --enrich: one line per answer; empty without",
+          "items": {
+            "$ref": "#/$defs/answer"
+          }
+        }
+      }
+    },
+    "attachment": {
+      "type": "object",
+      "description": "An attachment (never opened: only its bytes are hashed and its type sniffed)",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "declared_type",
+        "real_type",
+        "size",
+        "md5",
+        "sha1",
+        "sha256",
+        "members",
+        "encrypted",
+        "reputation"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The file name the email gives, defanged where it contains a domain"
+        },
+        "declared_type": {
+          "type": "string",
+          "description": "The type the email claims"
+        },
+        "real_type": {
+          "type": "string",
+          "description": "The type found from the content (libmagic); empty if unknown"
+        },
+        "size": {
+          "type": "integer",
+          "description": "Size in bytes",
+          "minimum": 0
+        },
+        "md5": {
+          "type": "string",
+          "description": "MD5, lower-case hex",
+          "pattern": "^[0-9a-f]{32}$"
+        },
+        "sha1": {
+          "type": "string",
+          "description": "SHA-1, lower-case hex",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "sha256": {
+          "type": "string",
+          "description": "SHA-256, lower-case hex",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "members": {
+          "type": "array",
+          "description": "The names inside a ZIP archive",
+          "items": {
+            "type": "string"
+          }
+        },
+        "encrypted": {
+          "type": "boolean",
+          "description": "A password-protected ZIP: scanners cannot look inside"
+        },
+        "reputation": {
+          "type": "array",
+          "description": "With --enrich: the answers for its hash",
+          "items": {
+            "$ref": "#/$defs/answer"
+          }
+        }
+      }
+    },
+    "auth": {
+      "type": "object",
+      "description": "SPF, DKIM and DMARC, from the trusted Authentication-Results header",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "found",
+        "spf",
+        "dkim",
+        "dmarc",
+        "compauth",
+        "compauth_reason"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "description": "Which header the results come from"
+        },
+        "found": {
+          "type": "boolean",
+          "description": "False when no trusted header was found: the results are unknown"
+        },
+        "spf": {
+          "type": "string",
+          "description": "pass, fail, softfail, neutral, none, ... or unknown"
+        },
+        "dkim": {
+          "type": "string",
+          "description": "pass, fail, none, ... or unknown"
+        },
+        "dmarc": {
+          "type": "string",
+          "description": "pass, fail, none, ... or unknown"
+        },
+        "compauth": {
+          "type": "string",
+          "description": "Microsoft's own verdict; unknown when its servers wrote none"
+        },
+        "compauth_reason": {
+          "type": "string",
+          "description": "Microsoft's reason code, e.g. '001'; empty if none"
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "description": "What one check found. Findings have no points: scoring.yaml decides what they are worth",
+      "additionalProperties": false,
+      "required": [
+        "rule",
+        "detail",
+        "facts"
+      ],
+      "properties": {
+        "rule": {
+          "type": "string",
+          "description": "The check's rule name, e.g. 'dmarc_fail'"
+        },
+        "detail": {
+          "type": "string",
+          "description": "What was found, defanged"
+        },
+        "facts": {
+          "type": "object",
+          "description": "Numbers and fixed words behind a finding, e.g. {'malicious': 5, 'engines': 95}",
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "boolean"
+            ]
+          }
+        }
+      }
+    },
+    "email": {
+      "type": "object",
+      "description": "One email: the file itself, or one forwarded inside it",
+      "additionalProperties": false,
+      "required": [
+        "where",
+        "level",
+        "from_name",
+        "from_address",
+        "other_from",
+        "reply_to",
+        "return_path",
+        "subject",
+        "date",
+        "message_id",
+        "hops",
+        "sender_ip",
+        "sender_ip_source",
+        "sender_ip_certain",
+        "auth",
+        "score",
+        "attachments",
+        "iocs",
+        "findings",
+        "forwarded",
+        "defects",
+        "not_written"
+      ],
+      "properties": {
+        "where": {
+          "type": "string",
+          "description": "'' for the file itself; '1' for the first forwarded email; '1 > 2' for the second one inside that",
+          "pattern": "^([0-9]+( > [0-9]+)*)?$"
+        },
+        "level": {
+          "type": "integer",
+          "description": "0 for the file itself, 1 for an email inside it, 2 inside that, ...",
+          "minimum": 0
+        },
+        "from_name": {
+          "type": "string",
+          "description": "The sender's display name"
+        },
+        "from_address": {
+          "type": "string",
+          "description": "The sender's address, defanged, or REDACTED if it is one of yours"
+        },
+        "other_from": {
+          "type": "array",
+          "description": "Any further From addresses (a red flag in itself)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reply_to": {
+          "type": "array",
+          "description": "Reply-To addresses, defanged",
+          "items": {
+            "type": "string"
+          }
+        },
+        "return_path": {
+          "type": "string",
+          "description": "The bounce address, defanged"
+        },
+        "subject": {
+          "type": "string",
+          "description": "The subject, with links, addresses, domains and IPs defanged"
+        },
+        "date": {
+          "type": "string",
+          "description": "The Date header as written"
+        },
+        "message_id": {
+          "type": "string",
+          "description": "The Message-ID, defanged: search other mailboxes for it (refang first)"
+        },
+        "hops": {
+          "type": "integer",
+          "description": "How many Received headers",
+          "minimum": 0
+        },
+        "sender_ip": {
+          "type": "string",
+          "description": "The IP the email came from, defanged; empty if no header says"
+        },
+        "sender_ip_source": {
+          "type": "string",
+          "description": "Which header gave the sender IP"
+        },
+        "sender_ip_certain": {
+          "type": "boolean",
+          "description": "False when it came from a Received header, which is easier to fake"
+        },
+        "auth": {
+          "$ref": "#/$defs/auth"
+        },
+        "score": {
+          "$ref": "#/$defs/score"
+        },
+        "attachments": {
+          "type": "array",
+          "description": "Attachments",
+          "items": {
+            "$ref": "#/$defs/attachment"
+          }
+        },
+        "iocs": {
+          "type": "array",
+          "description": "Indicators of compromise, defanged",
+          "items": {
+            "$ref": "#/$defs/ioc"
+          }
+        },
+        "findings": {
+          "type": "array",
+          "description": "Everything the checks found",
+          "items": {
+            "$ref": "#/$defs/finding"
+          }
+        },
+        "forwarded": {
+          "type": "integer",
+          "description": "How many emails are forwarded inside this one (each has its own entry)",
+          "minimum": 0
+        },
+        "defects": {
+          "type": "array",
+          "description": "Notes from parsing, e.g. a part that could not be decoded",
+          "items": {
+            "type": "string"
+          }
+        },
+        "not_written": {
+          "type": "array",
+          "description": "Checks that are not written yet",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "file": {
+      "type": "object",
+      "description": "One .eml file",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "verdict",
+        "decided_by",
+        "emails",
+        "error"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The file name only, without its folder (which would show your user name)"
+        },
+        "verdict": {
+          "description": "The file's verdict: the worst email in it. null when the file could not be analysed",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/score"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "decided_by": {
+          "type": "string",
+          "description": "'' when the file's own email decides, else the deciding email's 'where'",
+          "pattern": "^([0-9]+( > [0-9]+)*)?$"
+        },
+        "emails": {
+          "type": "array",
+          "description": "The email, then every email forwarded inside it, in report order",
+          "items": {
+            "$ref": "#/$defs/email"
+          }
+        },
+        "error": {
+          "type": "string",
+          "description": "Why the file could not be analysed; empty when it was"
+        }
+      }
+    }
+  }
+}

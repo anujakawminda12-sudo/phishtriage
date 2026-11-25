@@ -1,0 +1,32 @@
+Received: from mail.docusign-notice.test (mail.docusign-notice.test [203.0.113.88])
+ by mx.example.org with ESMTPS id 4Xk2; Mon, 23 Nov 2026 09:00:01 +0000
+Authentication-Results: mx.example.org; spf=pass (mx.example.org: domain of
+ bounce@docusign-notice.test designates 203.0.113.88 as permitted sender)
+ smtp.mailfrom=bounce@docusign-notice.test; dkim=pass header.d=docusign-notice.test;
+ dmarc=pass header.from=docusign-notice.test
+From: "DocuSign" <dse@docusign-notice.test>
+To: student@example.org
+Subject: Please review and sign: Contract_2026.pdf
+Date: Mon, 23 Nov 2026 09:00:00 +0000
+Message-ID: <9f2c4b@docusign-notice.test>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="ds"
+
+--ds
+Content-Type: text/plain; charset="utf-8"
+
+You have a document waiting for your signature.
+Review document: https://www.example.com/url?q=https://docs-review.test/view/7781&sa=D
+Help: https://click.docusign-notice.test/track?url=https://docusign-notice.test/help
+
+--ds
+Content-Type: text/html; charset="utf-8"
+
+<html><body>
+<img src="https://images.example.org/proxy?src=https://cdn.example.net/logo.png" alt="logo">
+<p>You have a document waiting for your signature.</p>
+<p><a href="https://www.example.com/url?q=https://docs-review.test/view/7781&amp;sa=D">REVIEW DOCUMENT</a></p>
+<p><a href="https://click.docusign-notice.test/track?url=https%3A%2F%2Fdocusign-notice.test%2Fhelp">Help</a></p>
+</body></html>
+
+--ds--

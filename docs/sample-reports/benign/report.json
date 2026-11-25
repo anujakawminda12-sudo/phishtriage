@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "defanged": true,
+  "tool": "PhishTriage",
+  "version": "0.1.0",
+  "generated_at": "2026-11-24T14:14:33Z",
+  "scoring_source": "built-in scoring.yaml",
+  "scoring_sha256": "77c8089435bc8c70f6ad79a74e98004b65a64cf2c9255bccfe9adc2ed190bcf3",
+  "enriched": false,
+  "redacted": 0,
+  "files": [
+    {
+      "name": "legit_newsletter.eml",
+      "verdict": {
+        "verdict": "likely benign",
+        "total": 0,
+        "attack": [],
+        "basis": "not_enriched",
+        "basis_text": "headers and content only: not enriched (--enrich adds reputation lookups)",
+        "unanswered": 0,
+        "reasons": []
+      },
+      "decided_by": "",
+      "emails": [
+        {
+          "where": "",
+          "level": 0,
+          "from_name": "Example Store",
+          "from_address": "news[@]example[.]com",
+          "other_from": [],
+          "reply_to": [],
+          "return_path": "bounce[@]example[.]com",
+          "subject": "Your November newsletter",
+          "date": "Tue, 17 Nov 2026 17:15:00 +0000",
+          "message_id": "<20261117171500[.]12345[@]example[.]com>",
+          "hops": 1,
+          "sender_ip": "192[.]0[.]2[.]10",
+          "sender_ip_source": "Authentication-Results",
+          "sender_ip_certain": true,
+          "auth": {
+            "source": "from mx[.]google[.]com",
+            "found": true,
+            "spf": "pass",
+            "dkim": "pass",
+            "dmarc": "pass",
+            "compauth": "unknown",
+            "compauth_reason": ""
+          },
+          "score": {
+            "verdict": "likely benign",
+            "total": 0,
+            "attack": [],
+            "basis": "not_enriched",
+            "basis_text": "headers and content only: not enriched (--enrich adds reputation lookups)",
+            "unanswered": 0,
+            "reasons": []
+          },
+          "attachments": [],
+          "iocs": [
+            {
+              "kind": "url",
+              "value": "hxxps://www[.]example[.]com/offers",
+              "seen": 2,
+              "sources": [
+                "text",
+                "html:a[href]"
+              ],
+              "allowlisted": true,
+              "group": "example[.]com",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "domain",
+              "value": "www[.]example[.]com",
+              "seen": 1,
+              "sources": [
+                "url"
+              ],
+              "allowlisted": true,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "domain",
+              "value": "example[.]com",
+              "seen": 3,
+              "sources": [
+                "email address",
+                "header:Message-ID"
+              ],
+              "allowlisted": true,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "ip",
+              "value": "192[.]0[.]2[.]10",
+              "seen": 2,
+              "sources": [
+                "sender IP",
+                "header:Received (hop 1)"
+              ],
+              "allowlisted": false,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "email",
+              "value": "news[@]example[.]com",
+              "seen": 1,
+              "sources": [
+                "header:From"
+              ],
+              "allowlisted": true,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "email",
+              "value": "bounce[@]example[.]com",
+              "seen": 1,
+              "sources": [
+                "header:Return-Path"
+              ],
+              "allowlisted": true,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            }
+          ],
+          "findings": [],
+          "forwarded": 0,
+          "defects": [],
+          "not_written": []
+        }
+      ],
+      "error": ""
+    }
+  ]
+}

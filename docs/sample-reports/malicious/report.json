@@ -1,0 +1,549 @@
+{
+  "schema_version": 1,
+  "defanged": true,
+  "tool": "PhishTriage",
+  "version": "0.1.0",
+  "generated_at": "2026-11-24T14:14:04Z",
+  "scoring_source": "built-in scoring.yaml",
+  "scoring_sha256": "77c8089435bc8c70f6ad79a74e98004b65a64cf2c9255bccfe9adc2ed190bcf3",
+  "enriched": false,
+  "redacted": 0,
+  "files": [
+    {
+      "name": "phish_paypal_spoof.eml",
+      "verdict": {
+        "verdict": "malicious",
+        "total": 100,
+        "attack": [
+          {
+            "id": "T1566.001",
+            "name": "Phishing: Spearphishing Attachment"
+          },
+          {
+            "id": "T1566.002",
+            "name": "Phishing: Spearphishing Link"
+          }
+        ],
+        "basis": "not_enriched",
+        "basis_text": "headers and content only: not enriched (--enrich adds reputation lookups)",
+        "unanswered": 0,
+        "reasons": [
+          {
+            "signal": "dmarc_fail",
+            "label": "The From domain failed DMARC",
+            "points": 25,
+            "rules": [
+              "dmarc_fail"
+            ],
+            "details": [
+              "DMARC result: fail"
+            ],
+            "note": "",
+            "override": false
+          },
+          {
+            "signal": "lookalike_sender",
+            "label": "The sender's domain imitates a brand",
+            "points": 20,
+            "rules": [
+              "lookalike_sender_domain"
+            ],
+            "details": [
+              "Reply-To domain paypa1-secure[.]test looks like paypal: look-alike characters in \"paypa1\" (\"1\" for \"l\")"
+            ],
+            "note": "",
+            "override": false
+          },
+          {
+            "signal": "risky_attachment",
+            "label": "An attachment is a risky type, or is not what its name says",
+            "points": 20,
+            "rules": [
+              "attachment_risky_type"
+            ],
+            "details": [
+              "Account_Review.html (a web page: fake login forms and HTML smuggling)"
+            ],
+            "note": "",
+            "override": false
+          },
+          {
+            "signal": "link_text_mismatch",
+            "label": "A link's text shows one site, but the link goes to another",
+            "points": 15,
+            "rules": [
+              "link_text_mismatch"
+            ],
+            "details": [
+              "1 link shows one domain but goes to another, e.g. \"hxxps://www[.]paypal[.]com/signin\" goes to paypa1-secure[.]test"
+            ],
+            "note": "",
+            "override": false
+          },
+          {
+            "signal": "reply_to_mismatch",
+            "label": "Replies would go to a different organisation than the sender's",
+            "points": 15,
+            "rules": [
+              "reply_to_mismatch"
+            ],
+            "details": [
+              "Reply-To support[@]paypa1-secure[.]test differs from From service[@]paypal[.]com"
+            ],
+            "note": "",
+            "override": false
+          },
+          {
+            "signal": "spf_fail",
+            "label": "The sending server is not allowed to send for the sender's domain (SPF)",
+            "points": 10,
+            "rules": [
+              "spf_softfail"
+            ],
+            "details": [
+              "SPF result: softfail"
+            ],
+            "note": "",
+            "override": false
+          },
+          {
+            "signal": "dkim_problem",
+            "label": "DKIM failed, is missing, or was not signed by the sender's own domain",
+            "points": 10,
+            "rules": [
+              "dkim_none"
+            ],
+            "details": [
+              "DKIM result: none"
+            ],
+            "note": "",
+            "override": false
+          },
+          {
+            "signal": "pressure_wording",
+            "label": "The text pushes for quick action or asks for a login, password or payment",
+            "points": 5,
+            "rules": [
+              "urgency_wording",
+              "credential_request_wording"
+            ],
+            "details": [
+              "Pressure to act quickly, in the subject and the body: \"account has been suspended\", \"unusual activity\", \"within 24 hours\"",
+              "Asks for a login, password or payment, in the body: \"verify your account\""
+            ],
+            "note": "",
+            "override": false
+          },
+          {
+            "signal": "return_path_mismatch",
+            "label": "Bounces go to a different organisation than the sender's (Return-Path)",
+            "points": 5,
+            "rules": [
+              "return_path_mismatch"
+            ],
+            "details": [
+              "Return-Path bounce[@]mailer-7731[.]test differs from From service[@]paypal[.]com"
+            ],
+            "note": "",
+            "override": false
+          },
+          {
+            "signal": "extra_auth_results",
+            "label": "More Authentication-Results headers further down (normal after forwarding)",
+            "points": 0,
+            "rules": [
+              "extra_auth_results"
+            ],
+            "details": [
+              "1 more Authentication-Results header(s) lower down were ignored (normal after forwarding, suspicious otherwise)"
+            ],
+            "note": "",
+            "override": false
+          }
+        ]
+      },
+      "decided_by": "",
+      "emails": [
+        {
+          "where": "",
+          "level": 0,
+          "from_name": "PayPal Security",
+          "from_address": "service[@]paypal[.]com",
+          "other_from": [],
+          "reply_to": [
+            "support[@]paypa1-secure[.]test"
+          ],
+          "return_path": "bounce[@]mailer-7731[.]test",
+          "subject": "Your account has been suspended",
+          "date": "Wed, 18 Nov 2026 10:41:00 +0000",
+          "message_id": "<a8f3e2[@]mailer-7731[.]test>",
+          "hops": 1,
+          "sender_ip": "203[.]0[.]113[.]45",
+          "sender_ip_source": "Authentication-Results",
+          "sender_ip_certain": true,
+          "auth": {
+            "source": "from mx[.]google[.]com",
+            "found": true,
+            "spf": "softfail",
+            "dkim": "none",
+            "dmarc": "fail",
+            "compauth": "unknown",
+            "compauth_reason": ""
+          },
+          "score": {
+            "verdict": "malicious",
+            "total": 100,
+            "attack": [
+              {
+                "id": "T1566.001",
+                "name": "Phishing: Spearphishing Attachment"
+              },
+              {
+                "id": "T1566.002",
+                "name": "Phishing: Spearphishing Link"
+              }
+            ],
+            "basis": "not_enriched",
+            "basis_text": "headers and content only: not enriched (--enrich adds reputation lookups)",
+            "unanswered": 0,
+            "reasons": [
+              {
+                "signal": "dmarc_fail",
+                "label": "The From domain failed DMARC",
+                "points": 25,
+                "rules": [
+                  "dmarc_fail"
+                ],
+                "details": [
+                  "DMARC result: fail"
+                ],
+                "note": "",
+                "override": false
+              },
+              {
+                "signal": "lookalike_sender",
+                "label": "The sender's domain imitates a brand",
+                "points": 20,
+                "rules": [
+                  "lookalike_sender_domain"
+                ],
+                "details": [
+                  "Reply-To domain paypa1-secure[.]test looks like paypal: look-alike characters in \"paypa1\" (\"1\" for \"l\")"
+                ],
+                "note": "",
+                "override": false
+              },
+              {
+                "signal": "risky_attachment",
+                "label": "An attachment is a risky type, or is not what its name says",
+                "points": 20,
+                "rules": [
+                  "attachment_risky_type"
+                ],
+                "details": [
+                  "Account_Review.html (a web page: fake login forms and HTML smuggling)"
+                ],
+                "note": "",
+                "override": false
+              },
+              {
+                "signal": "link_text_mismatch",
+                "label": "A link's text shows one site, but the link goes to another",
+                "points": 15,
+                "rules": [
+                  "link_text_mismatch"
+                ],
+                "details": [
+                  "1 link shows one domain but goes to another, e.g. \"hxxps://www[.]paypal[.]com/signin\" goes to paypa1-secure[.]test"
+                ],
+                "note": "",
+                "override": false
+              },
+              {
+                "signal": "reply_to_mismatch",
+                "label": "Replies would go to a different organisation than the sender's",
+                "points": 15,
+                "rules": [
+                  "reply_to_mismatch"
+                ],
+                "details": [
+                  "Reply-To support[@]paypa1-secure[.]test differs from From service[@]paypal[.]com"
+                ],
+                "note": "",
+                "override": false
+              },
+              {
+                "signal": "spf_fail",
+                "label": "The sending server is not allowed to send for the sender's domain (SPF)",
+                "points": 10,
+                "rules": [
+                  "spf_softfail"
+                ],
+                "details": [
+                  "SPF result: softfail"
+                ],
+                "note": "",
+                "override": false
+              },
+              {
+                "signal": "dkim_problem",
+                "label": "DKIM failed, is missing, or was not signed by the sender's own domain",
+                "points": 10,
+                "rules": [
+                  "dkim_none"
+                ],
+                "details": [
+                  "DKIM result: none"
+                ],
+                "note": "",
+                "override": false
+              },
+              {
+                "signal": "pressure_wording",
+                "label": "The text pushes for quick action or asks for a login, password or payment",
+                "points": 5,
+                "rules": [
+                  "urgency_wording",
+                  "credential_request_wording"
+                ],
+                "details": [
+                  "Pressure to act quickly, in the subject and the body: \"account has been suspended\", \"unusual activity\", \"within 24 hours\"",
+                  "Asks for a login, password or payment, in the body: \"verify your account\""
+                ],
+                "note": "",
+                "override": false
+              },
+              {
+                "signal": "return_path_mismatch",
+                "label": "Bounces go to a different organisation than the sender's (Return-Path)",
+                "points": 5,
+                "rules": [
+                  "return_path_mismatch"
+                ],
+                "details": [
+                  "Return-Path bounce[@]mailer-7731[.]test differs from From service[@]paypal[.]com"
+                ],
+                "note": "",
+                "override": false
+              },
+              {
+                "signal": "extra_auth_results",
+                "label": "More Authentication-Results headers further down (normal after forwarding)",
+                "points": 0,
+                "rules": [
+                  "extra_auth_results"
+                ],
+                "details": [
+                  "1 more Authentication-Results header(s) lower down were ignored (normal after forwarding, suspicious otherwise)"
+                ],
+                "note": "",
+                "override": false
+              }
+            ]
+          },
+          "attachments": [
+            {
+              "name": "Account_Review.html",
+              "declared_type": "text/html",
+              "real_type": "text/html",
+              "size": 78,
+              "md5": "90a27bf9ff2135cdb1ee1388f4d77e81",
+              "sha1": "5fa788edc6d900210392567842034b23f27ee980",
+              "sha256": "f679d22f749f5153d0f27088521142f6a55bed15164881b416da0e07e6d54950",
+              "members": [],
+              "encrypted": false,
+              "reputation": []
+            }
+          ],
+          "iocs": [
+            {
+              "kind": "url",
+              "value": "hxxps://www[.]paypal[.]com/signin",
+              "seen": 2,
+              "sources": [
+                "text",
+                "html:text"
+              ],
+              "allowlisted": false,
+              "group": "paypal[.]com",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "url",
+              "value": "hxxp://paypa1-secure[.]test/login",
+              "seen": 1,
+              "sources": [
+                "html:a[href]"
+              ],
+              "allowlisted": false,
+              "group": "paypa1-secure[.]test",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "domain",
+              "value": "www[.]paypal[.]com",
+              "seen": 1,
+              "sources": [
+                "url"
+              ],
+              "allowlisted": false,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "domain",
+              "value": "paypa1-secure[.]test",
+              "seen": 2,
+              "sources": [
+                "url",
+                "email address"
+              ],
+              "allowlisted": false,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "domain",
+              "value": "paypal[.]com",
+              "seen": 1,
+              "sources": [
+                "email address"
+              ],
+              "allowlisted": false,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "domain",
+              "value": "mailer-7731[.]test",
+              "seen": 2,
+              "sources": [
+                "email address",
+                "header:Message-ID"
+              ],
+              "allowlisted": false,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "ip",
+              "value": "203[.]0[.]113[.]45",
+              "seen": 2,
+              "sources": [
+                "sender IP",
+                "header:Received (hop 1)"
+              ],
+              "allowlisted": false,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "email",
+              "value": "service[@]paypal[.]com",
+              "seen": 1,
+              "sources": [
+                "header:From"
+              ],
+              "allowlisted": false,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "email",
+              "value": "support[@]paypa1-secure[.]test",
+              "seen": 1,
+              "sources": [
+                "header:Reply-To"
+              ],
+              "allowlisted": false,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            },
+            {
+              "kind": "email",
+              "value": "bounce[@]mailer-7731[.]test",
+              "seen": 1,
+              "sources": [
+                "header:Return-Path"
+              ],
+              "allowlisted": false,
+              "group": "",
+              "looked_up": null,
+              "reputation": []
+            }
+          ],
+          "findings": [
+            {
+              "rule": "spf_softfail",
+              "detail": "SPF result: softfail",
+              "facts": {}
+            },
+            {
+              "rule": "dkim_none",
+              "detail": "DKIM result: none",
+              "facts": {}
+            },
+            {
+              "rule": "dmarc_fail",
+              "detail": "DMARC result: fail",
+              "facts": {}
+            },
+            {
+              "rule": "extra_auth_results",
+              "detail": "1 more Authentication-Results header(s) lower down were ignored (normal after forwarding, suspicious otherwise)",
+              "facts": {}
+            },
+            {
+              "rule": "reply_to_mismatch",
+              "detail": "Reply-To support[@]paypa1-secure[.]test differs from From service[@]paypal[.]com",
+              "facts": {}
+            },
+            {
+              "rule": "return_path_mismatch",
+              "detail": "Return-Path bounce[@]mailer-7731[.]test differs from From service[@]paypal[.]com",
+              "facts": {}
+            },
+            {
+              "rule": "lookalike_sender_domain",
+              "detail": "Reply-To domain paypa1-secure[.]test looks like paypal: look-alike characters in \"paypa1\" (\"1\" for \"l\")",
+              "facts": {}
+            },
+            {
+              "rule": "link_text_mismatch",
+              "detail": "1 link shows one domain but goes to another, e.g. \"hxxps://www[.]paypal[.]com/signin\" goes to paypa1-secure[.]test",
+              "facts": {}
+            },
+            {
+              "rule": "urgency_wording",
+              "detail": "Pressure to act quickly, in the subject and the body: \"account has been suspended\", \"unusual activity\", \"within 24 hours\"",
+              "facts": {}
+            },
+            {
+              "rule": "credential_request_wording",
+              "detail": "Asks for a login, password or payment, in the body: \"verify your account\"",
+              "facts": {}
+            },
+            {
+              "rule": "attachment_risky_type",
+              "detail": "Account_Review.html (a web page: fake login forms and HTML smuggling)",
+              "facts": {}
+            }
+          ],
+          "forwarded": 0,
+          "defects": [],
+          "not_written": []
+        }
+      ],
+      "error": ""
+    }
+  ]
+}

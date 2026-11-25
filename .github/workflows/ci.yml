@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+# The workflow only reads the code, so its GitHub token may only read too.
+permissions:
+  contents: read
+
+# A newer push to the same branch cancels the older run that is still going.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test on Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      # Let all three versions finish, so a failure shows which versions it affects.
+      fail-fast: false
+      matrix:
+        # 3.12: the oldest supported version. 3.13: common on current Linux systems.
+        # 3.15: the version used for development. zipfile.is_zipfile() behaves
+        # differently between them (week 2, step 8), so all three are tested.
+        python-version: ["3.12", "3.13", "3.15"]
+    steps:
+      # Each action is pinned to a full commit hash: a tag like v7 can be moved to other
+      # code later, a hash cannot. The comment names the release that hash belongs to.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Nothing is pushed back, so the token is not kept after the checkout.
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install libmagic (used by python-magic to detect real file types)
+        run: sudo apt-get update && sudo apt-get install -y libmagic1
+      - name: Install
+        run: pip install -e ".[dev]"
+      - name: Lint
+        run: ruff check . && ruff format --check .
+      - name: Test (the tests block all real network access, so no API is ever called)
+        run: pytest --cov=phishtriage --cov-report=term-missing

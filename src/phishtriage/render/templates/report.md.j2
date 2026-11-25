@@ -1,0 +1,125 @@
+{#- The Markdown report (week 4, step 11). Every {{ value }} is escaped by md_escape (the
+    environment's finalize), so only this template's own text can be formatting.
+    Rule: a line never starts with a {{ value }} (it could start a list or a quote).
+    "+%}" keeps the line break after a tag that ends a table row. -#}
+# PhishTriage report
+
+{{ report.tool }} {{ report.version }}, generated {{ report.generated_at }} (UTC).
+Scoring: {{ report.scoring_source }}, SHA-256 {{ report.scoring_sha256 | code }}.
+{% if report.enriched %}
+With reputation lookups.
+{% else %}
+Headers and content only: no reputation lookups.
+{% endif %}
+{% if report.redacted %}
+Pieces of text your addresses were removed from: {{ report.redacted }}.
+{% endif %}
+Every link, address, domain and IP is defanged: nothing in this report can be clicked.
+
+## Summary
+
+Worst first; each file has its own section below.
+
+| File | Verdict | Decided by |
+| --- | --- | --- |
+{% for file in ranked(report.files) %}
+{% if file.error %}
+| {{ file.name }} | could not be analysed | {{ "-" }} |
+{% else %}
+| {{ file.name }} | **{{ verdict(file.verdict) }}** | {{ "forwarded email " ~ file.decided_by if file.decided_by else "the email itself" }} |
+{% endif %}
+{% endfor %}
+{% for file in report.files %}
+
+## {{ file.name }}
+
+{% if file.error %}
+Could not be analysed: {{ file.error }}
+{% else %}
+**{{ verdict(file.verdict) }}**{% if file.decided_by %}, decided by forwarded email {{ file.decided_by }}: a forward is judged by what it carries{% endif +%}
+{% for email in file.emails %}
+
+{% if email.level == 0 %}
+### The email
+{% else %}
+### Forwarded email {{ email.where }} (level {{ email.level }})
+{% endif %}
+
+| Field | Value |
+| --- | --- |
+| Verdict | **{{ verdict(email.score) }}** |
+| Based on | {{ email.score.basis_text }} |
+{% if email.score.attack %}
+| ATT\&CK | {{ attack(email.score) }} |
+{% endif %}
+| From | {{ sender(email) | code }} |
+| Reply-To | {{ email.reply_to | join(", ") | code if email.reply_to else "-" }} |
+| Return-Path | {{ email.return_path | code if email.return_path else "-" }} |
+| Subject | {{ email.subject or "-" }} |
+| Date | {{ email.date or "-" }} |
+| Message-ID | {{ email.message_id | code if email.message_id else "-" }} |
+| Received hops | {{ email.hops }} |
+| Sender IP | {{ sender_ip(email) | code if email.sender_ip else "-" }} |
+| IOCs found | {{ count_iocs(email.iocs) }} |
+| Authentication | SPF {{ email.auth.spf }}, DKIM {{ email.auth.dkim }}, DMARC {{ email.auth.dmarc }} ({{ email.auth.source }}){% if email.auth.compauth != "unknown" %}, COMPAUTH {{ email.auth.compauth }}{% if email.auth.compauth_reason %} (reason {{ email.auth.compauth_reason }}){% endif %}{% endif %} |
+{% if email.forwarded %}
+| Forwarded emails | {{ email.forwarded }} (reported separately below) |
+{% endif %}
+{% if email.score.reasons %}
+
+#### Reasons
+
+| Points | Reason | Rules | Why it added nothing |
+| --- | --- | --- | --- |
+{% for reason in email.score.reasons %}
+| {{ points(reason) }} | {{ reason.label }} | {{ reason.rules | join(", ") }} | {{ reason.note or "-" }} |
+{% endfor %}
+{% endif %}
+{% if email.attachments %}
+
+#### Attachments
+
+{% if report.enriched %}
+| Name | Declared type | Real type | Size | SHA-256 | Reputation |
+| --- | --- | --- | --- | --- | --- |
+{% else %}
+| Name | Declared type | Real type | Size | SHA-256 |
+| --- | --- | --- | --- | --- |
+{% endif %}
+{% for att in email.attachments %}
+| {{ att.name }} | {{ att.declared_type }} | {{ att.real_type or "?" }} | {{ att.size }} | {{ att.sha256 | code }} |{% if report.enriched %} {{ answers(att.reputation) }} |{% endif +%}
+{% endfor %}
+{% for att in email.attachments if att.members %}
+
+- Inside {{ att.name }}{{ " (password-protected)" if att.encrypted else "" }}: {{ att.members | join(", ") }}
+{% endfor %}
+{% endif %}
+{% if email.iocs %}
+
+#### IOCs (defanged)
+
+| Type | Value | Seen | Found in | {{ "Reputation" if report.enriched else "Looked up" }} |
+| --- | --- | --- | --- | --- |
+{% for ioc in email.iocs %}
+| {{ ioc_label(ioc.kind) }} | {{ ioc.value | code }} | {{ ioc.seen }} | {{ ioc.sources | join(", ") }} | {{ lookup(ioc, report.enriched) }} |
+{% endfor %}
+{% endif %}
+
+#### Findings
+
+{% for finding in email.findings %}
+- {{ finding.rule | code }}: {{ finding.detail }}
+{% else %}
+None so far.
+{% endfor %}
+{% if email.not_written %}
+
+Not written yet: {{ email.not_written | join(", ") }}
+{% endif %}
+{% if email.defects %}
+
+Parsing notes: {{ email.defects | join(", ") }}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}

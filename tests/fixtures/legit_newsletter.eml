@@ -1,0 +1,28 @@
+Return-Path: <bounce@example.com>
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@example.com header.s=s1 header.b=AbCdEf12;
+       spf=pass (google.com: domain of bounce@example.com designates 192.0.2.10 as permitted sender) smtp.mailfrom=bounce@example.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=example.com
+Received: from mail.example.com (mail.example.com [192.0.2.10])
+        by mx.google.com with ESMTPS id a1b2c3d4
+        for <student@example.org>; Tue, 17 Nov 2026 09:15:02 -0800 (PST)
+From: Example Store <news@example.com>
+To: student@example.org
+Subject: Your November newsletter
+Date: Tue, 17 Nov 2026 17:15:00 +0000
+Message-ID: <20261117171500.12345@example.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="b1"
+
+--b1
+Content-Type: text/plain; charset="utf-8"
+
+Hi, here are this month's offers: https://www.example.com/offers
+
+--b1
+Content-Type: text/html; charset="utf-8"
+
+<html><body><p>Hi, here are this month's offers:
+<a href="https://www.example.com/offers">www.example.com/offers</a></p></body></html>
+
+--b1--
